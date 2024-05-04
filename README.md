@@ -36,3 +36,19 @@ $ git clone https://github.com/talvor/dev-setup.git
    $ ./install.sh
    ```
 
+## Setting up development container
+
+1. Create the **dev** dev container
+
+   ```shell
+   $ toolbox create -n dev
+   ```
+
+1. Enter development container and setup ansible
+
+   ```shell
+   $ distrobox enter dev
+   $ cd popos-dev-playbook
+   $ ./setup.sh
+   $ ansible-galaxy install -r requirements.yml
+   ```

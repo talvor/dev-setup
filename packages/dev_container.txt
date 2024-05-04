@@ -1,0 +1,12 @@
+eza
+fzf
+go
+lazygit
+neofetch
+neovim
+ripgrep
+gcc
+gcc-c++
+make
+tmux
+zsh
