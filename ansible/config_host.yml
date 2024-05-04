@@ -1,0 +1,22 @@
+---
+downloads: ~/.ansible-downloads/
+
+# Nerd fonts
+nf_user: "{{ ansible_env.USER }}"
+nf_group: "{{ nf_user }}"
+nf_single_fonts:
+  - "FiraCode/Regular/FiraCodeNerdFont-Regular.ttf"
+  - "FiraCode/Regular/FiraCodeNerdFontMono-Regular.ttf"
+
+# Install packages.
+flatpak_packages:
+  - name: com.brave.Browser
+  - name: com.visualstudio.code
+
+system_packages:
+  - name: neofetch
+  - name: htop
+  - name: alacritty
+  - name: stow
+
+

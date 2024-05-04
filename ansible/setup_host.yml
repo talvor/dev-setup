@@ -1,0 +1,43 @@
+---
+- hosts: all
+
+  vars:
+    local_home: "{{ lookup('env','HOME') }}"
+    local_user: "{{ lookup('env','USER') }}"
+
+  pre_tasks:
+    - name: Include playbook configuration.
+      include_vars: "{{ item }}"
+      with_fileglob:
+        - "{{ playbook_dir }}/config_host.yml"
+      tags:
+        - always
+
+  roles:
+    - role: ctorgalson.nerdfonts
+      tags:
+        - fonts
+
+  tasks:
+    - name: Install packages
+      import_tasks: tasks/packages.yml
+      tags:
+        - packages
+
+    - name: Create ssh directory if it does not exist
+      ansible.builtin.file:
+        path: "{{ lookup('env','HOME') }}/.ssh"
+        state: directory
+        mode: '0755'
+      tags:
+        - ssh
+
+    - name: Install ssh keys
+      import_tasks: tasks/ssh.yml
+      tags:
+        - ssh
+
+    - name: Install gpg keys
+      import_tasks: tasks/gpg.yml
+      tags:
+        - gpg

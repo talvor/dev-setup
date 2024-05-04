@@ -1,0 +1,16 @@
+---
+- name: Load gpg_key_vault
+  include_vars:
+    file: files/gpg_key_vault.yml
+
+- name: Check for gpg key
+  shell: "gpg --list-keys {{gpg_key_id}}"
+  register: check_gpg_key
+  ignore_errors: True
+
+- name: Add GPG Key and set trust
+  gpg_key:
+    content: "{{gpg_key | b64decode}}"
+    trust: '5'
+    passphrase: "{{gpg_passphrase}}"
+  when: check_gpg_key.failed
