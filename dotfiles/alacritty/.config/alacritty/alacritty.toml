@@ -1,0 +1,24 @@
+import = [
+    "~/.config/alacritty/themes/themes/nord.toml"
+]
+live_config_reload = true
+
+[ env ]
+TERM = "xterm-256color"
+
+[window]
+padding.x = 10
+padding.y = 10
+
+decorations = "None"
+opacity = 0.8
+blur = true
+
+[font]
+normal.family = "FiraCode Nerd Font Mono"
+
+#regular
+size = 12
+
+#for video
+# size = 35.0

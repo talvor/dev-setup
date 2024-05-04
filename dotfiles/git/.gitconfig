@@ -1,0 +1,6 @@
+[user]
+	email = talvor@me.com
+	name = Phillip Hall
+	signingkey = 158BACCC923CE98D
+[commit]
+	gpgsign = true

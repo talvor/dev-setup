@@ -25,3 +25,14 @@ $ git clone https://github.com/talvor/dev-setup.git
 
 1. Restart your machine
 
+## Setting up dotfiles
+
+1. Install dependencies
+
+   ```shell
+   $ cd ~/dev-setup
+   $ ./setup_fedora.sh
+   $ cd dotfiles
+   $ ./install.sh
+   ```
+
