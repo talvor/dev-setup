@@ -10,4 +10,6 @@ return {
   { import = "astrocommunity.pack.go" },
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.typescript" },
+
+  { import = "astrocommunity.test.neotest" },
 }
