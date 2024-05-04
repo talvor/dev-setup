@@ -27,12 +27,10 @@ $ git clone https://github.com/talvor/dev-setup.git
 
 ## Setting up dotfiles
 
-1. Install dependencies
+1. Link dotfiles
 
    ```shell
-   $ cd ~/dev-setup
-   $ ./setup_fedora.sh
-   $ cd dotfiles
+   $ cd ~/dev-setup/dotfiles
    $ ./install.sh
    ```
 
