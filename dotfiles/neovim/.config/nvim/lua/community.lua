@@ -10,6 +10,8 @@ return {
   { import = "astrocommunity.lsp.lsp-lens-nvim" },
   { import = "astrocommunity.lsp.lsp-signature-nvim" },
 
+  { import = "astrocommunity.motion.harpoon" },
+
   { import = "astrocommunity.pack.go" },
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.typescript" },
