@@ -4,6 +4,7 @@ stow --target=$HOME alacritty
 stow --target=$HOME bash
 stow --target=$HOME git
 stow --target=$HOME neovim
+stow --target=$HOME starship
 stow --target=$HOME tmux
 stow --target=$HOME zsh
 
