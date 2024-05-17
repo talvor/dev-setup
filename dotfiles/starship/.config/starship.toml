@@ -1,4 +1,5 @@
 format = """\
+[╭─](black)\
 [ ](bg:yellow fg:black)\
 $directory\
 [](fg:yellow bg:green)\
@@ -11,11 +12,13 @@ $lua\
 $golang\
 $package\
 $fill\
-[](fg:blue bg:none)\
+[ ](fg:blue bg:none)\
 $cmd_duration\
 [](fg:yellow bg:blue)\
 $container\
-\n$character\
+\n[│](black)\
+\n[╰─](black)\
+$character\
 """
 
 [os]
@@ -50,6 +53,10 @@ style = "bg:blue fg:black"
 [package]
 symbol = "󰏗 "
 display_private = false
+
+[character]
+success_symbol = '[❯](bold fg:green)'
+error_symbol = '[❯](bold fg:red)'
 
 # Override symbol with nerdfonts
 [aws]
