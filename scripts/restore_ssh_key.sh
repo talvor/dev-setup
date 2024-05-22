@@ -26,7 +26,7 @@ age -d "$ENCRYPTED_FILE" > "$SSH_DIR/$SSH_FILE"
 # Check if decryption was successful
 if [ $? -ne 0 ]; then
   echo "Decryption failed."
-  rm "$SSH_DIR/$SSH_FILE"
+  rm -f "$SSH_DIR/$SSH_FILE"
   mv "$SSH_DIR/$SSH_BACKUP" "$SSH_DIR/$SSH_FILE"
   exit 1
 fi

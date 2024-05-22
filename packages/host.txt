@@ -6,3 +6,4 @@ neofetch
 htop
 alacritty
 stow
+age
