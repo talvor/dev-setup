@@ -20,6 +20,7 @@ trap cleanup EXIT
 
 # Variables
 ENCRYPTED_FILE="vault/gpg_key.age"
+OWNERTRUST_FILE="vault/gpg_ownertrust"
 DECRYPTED_FILE="$TEMP_DIR/my_gpg_key.asc"
 
 # Decrypt the GPG key
@@ -41,6 +42,10 @@ if [ $? -ne 0 ]; then
   echo "GPG key import failed."
   exit 1
 fi
+
+# Update owner trust
+echo "Updating owner trust..."
+gpg --import-ownertrust "$OWNERTRUST_FILE"
 
 echo "GPG key restored successfully."
 
