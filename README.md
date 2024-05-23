@@ -18,9 +18,6 @@ $ git clone https://github.com/talvor/dev-setup.git
    ```shell
    $ cd ~/dev-setup
    $ ./setup_fedora.sh
-   $ cd ~/dev-setup/ansible
-   $ ansible-galaxy install -r requirements.yml
-   $ ansible-playbook setup_host.yml --ask-become-pass --ask-vault-pass
    ```
 
 1. Restart your machine
@@ -42,11 +39,10 @@ $ git clone https://github.com/talvor/dev-setup.git
    $ toolbox create -n dev
    ```
 
-1. Enter development container and setup ansible
+1. Enter development container and install dependencies 
 
    ```shell
-   $ distrobox enter dev
-   $ cd popos-dev-playbook
-   $ ./setup.sh
-   $ ansible-galaxy install -r requirements.yml
+   $ toolbox enter dev
+   $ cd ~/dev-setup
+   $ ./setup_dev_container.sh
    ```
