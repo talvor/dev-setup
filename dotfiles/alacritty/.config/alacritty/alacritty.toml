@@ -15,7 +15,12 @@ opacity = 0.9
 blur = true
 
 [font]
-normal.family = "FiraCode Nerd Font Mono"
+# normal.family = "FiraCode Nerd Font Mono"
+# normal.family = "SauceCodePro Nerd Font Mono"
+# normal.family = "Hack Nerd Font Mono"
+# normal.family = "UbuntuMono Nerd Font Mono"
+# normal.family = "DejaVuSansM Nerd Font Mono"
+normal.family = "JetBrainsMono NF"
 
 #regular
 size = 13

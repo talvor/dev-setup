@@ -1,6 +1,8 @@
 
 #!/bin/bash
 
+echo "Restoring SSH key..."
+
 # Variables
 ENCRYPTED_FILE="vault/ssh_key.age"
 SSH_FILE="id_ed25519"

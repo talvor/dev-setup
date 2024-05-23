@@ -1,6 +1,8 @@
 
 #!/bin/bash
 
+echo "Restoring gpg key..."
+
 TEMP_DIR=`mktemp -d`
 
 # check if tmp dir was created

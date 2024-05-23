@@ -44,6 +44,7 @@ install_packages() {
 
 # Check if the input file exists
 if [ -f "$1" ]; then
+    echo "Installing packages..."
     install_packages "$1"
 else
     echo "Input file not found: $1"
