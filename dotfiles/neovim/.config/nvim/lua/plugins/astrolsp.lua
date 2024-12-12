@@ -1,4 +1,4 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
 
 -- AstroLSP allows you to customize the features in AstroNvim's LSP configuration engine
 -- Configuration documentation can be found with `:h astrolsp`
@@ -46,6 +46,10 @@ return {
     ---@diagnostic disable: missing-fields
     config = {
       -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
+      -- denols = {
+      --   -- adjust deno ls root directory detection
+      --   root_dir = function(...) return require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")(...) end,
+      -- },
     },
     -- customize how language servers are attached
     handlers = {
@@ -80,11 +84,35 @@ return {
           callback = function() vim.lsp.buf.clear_references() end,
         },
       },
+      -- set up autocommand to choose the correct language server
+      -- typescript_deno_switch = {
+      --   {
+      --     event = "LspAttach",
+      --     callback = function(args)
+      --       local bufnr = args.buf
+      --       local curr_client = vim.lsp.get_client_by_id(args.data.client_id)
+      --
+      --       -- if denols attached, stop it if there is a vtsls server attached
+      --       if curr_client and curr_client.name == "denols" then
+      --         if next((vim.lsp.get_clients or vim.lsp.get_active_clients) { bufnr = bufnr, name = "vtsls" }) then
+      --           vim.lsp.stop_client(curr_client.id, true)
+      --         end
+      --       end
+      --
+      --       -- if vtsls attached, stop it if there is a denols server attached
+      --       if curr_client and curr_client.name == "vtsls" then
+      --         if next((vim.lsp.get_clients or vim.lsp.get_active_clients) { bufnr = bufnr, name = "denols" }) then
+      --           vim.lsp.stop_client(curr_client.id, true)
+      --         end
+      --       end
+      --     end,
+      --   },
+      -- },
     },
     -- mappings to be set up on attaching of a language server
     mappings = {
       n = {
-        gl = { function() vim.diagnostic.open_float() end, desc = "Hover diagnostics" },
+        -- gl = { function() vim.diagnostic.open_float() end, desc = "Hover diagnostics" },
         -- a `cond` key can provided as the string of a server capability to be required to attach, or a function with `client` and `bufnr` parameters from the `on_attach` that returns a boolean
         -- gD = {
         --   function() vim.lsp.buf.declaration() end,

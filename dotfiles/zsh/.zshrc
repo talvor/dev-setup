@@ -25,8 +25,9 @@ setopt hist_verify
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
-
-source $HOME/.tmux.d/startup.sh 
+if [ "$TERM_PROGRAM" != "vscode" ]; then
+  source $HOME/.tmux.d/startup.sh 
+fi
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -52,5 +53,4 @@ load-nvmrc() {
 }
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
-
 
