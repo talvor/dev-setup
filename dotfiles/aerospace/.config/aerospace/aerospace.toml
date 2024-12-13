@@ -53,12 +53,6 @@ preset = 'qwerty'
 9 = ['secondary', 'dell']
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
-# Possible values:
-# - Constant:     gaps.outer.top = 8
-# - Per monitor:  gaps.outer.top = [{ monitor.main = 16 }, { monitor."some-pattern" = 32 }, 24]
-#                 In this example, 24 is a default value when there is no match.
-#                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
-#                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
 inner.horizontal = 10
 inner.vertical =   10
@@ -66,6 +60,10 @@ outer.left =       5
 outer.bottom =     5
 outer.top =        5
 outer.right =      5
+
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+run = ['layout floating']
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
