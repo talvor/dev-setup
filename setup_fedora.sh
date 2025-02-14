@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo dnf copr enable atim/lazygit -y
 ./scripts/install_packages.sh ./packages/host.txt
 
 ./scripts/restore_ssh_key.sh

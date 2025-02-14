@@ -3,3 +3,15 @@ htop
 alacritty
 stow
 age
+eza
+fzf
+go
+fastfetch
+lazygit
+neovim
+ripgrep
+gcc
+gcc-c++
+make
+tmux
+zsh
