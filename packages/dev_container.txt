@@ -2,7 +2,7 @@ eza
 fzf
 go
 lazygit
-neofetch
+fastfetch
 neovim
 ripgrep
 gcc

@@ -1,8 +1,4 @@
-python3-pip
 ansible
-podman-docker
-podman-compose
-neofetch
 htop
 alacritty
 stow

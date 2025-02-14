@@ -6,3 +6,5 @@ alias ls="eza --icons=always"
 
 alias podman="flatpak-spawn --host podman"
 alias docker="flatpak-spawn --host docker"
+
+alias enterdev="SHELL=/usr/bin/zsh toolbox enter dev"
