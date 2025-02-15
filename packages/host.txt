@@ -1,4 +1,5 @@
 ansible
+direnv
 htop
 alacritty
 stow
