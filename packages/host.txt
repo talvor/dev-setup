@@ -8,6 +8,7 @@ eza
 fzf
 go
 fastfetch
+lazydocker
 lazygit
 neovim
 ripgrep

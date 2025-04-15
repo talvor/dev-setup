@@ -30,3 +30,5 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 export GPG_TTY=$(tty)
+export DOCKER_SOCKET=$XDG_RUNTIME_DIR/podman/podman.sock
+export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
