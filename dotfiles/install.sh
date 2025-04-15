@@ -2,6 +2,7 @@
 
 stow --target=$HOME alacritty
 stow --target=$HOME bash
+stow --target=$HOME ghostty
 stow --target=$HOME git
 stow --target=$HOME neovim
 stow --target=$HOME starship
