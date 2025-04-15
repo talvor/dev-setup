@@ -11,7 +11,7 @@ MY_TERM_PROGRAM = "alacritty"
 padding.x = 10
 padding.y = 10
 
-decorations = "None"
+decorations = "Full"
 opacity = 0.9
 blur = true
 

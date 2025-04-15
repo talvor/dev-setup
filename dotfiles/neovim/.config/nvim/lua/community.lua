@@ -17,8 +17,10 @@ return {
   { import = "astrocommunity.pack.nix" },
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.typescript" },
+  { import = "astrocommunity.pack.terraform" },
   -- { import = "astrocommunity.pack.typescript-deno" },
   -- { import = "astrocommunity.pack.typescript-all-in-one" },
 
   { import = "astrocommunity.test.neotest" },
+  { import = "astrocommunity.docker.lazydocker" },
 }

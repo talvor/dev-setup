@@ -56,3 +56,11 @@ load-nvmrc() {
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
 
+
+export GPG_TTY=$(tty)
+
+export PATH="/Users/phall/.orbit/bin:$PATH"
+
+# Exports required for KITT++
+export KUBECONFIG=$(atlas kitt context:create --pid=$$)
+export HELM_DRIVER=configmap
