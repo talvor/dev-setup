@@ -16,11 +16,18 @@ install_with_dnf() {
     sudo dnf install -y "$@"
 }
 
+# Function to install packages using rpm-ostree
+install_with_rpmostree() {
+    rpm-ostree install "$@"
+}
+
 # Detect the package manager
 if command_exists apt; then
     packageManager="apt"
 elif command_exists dnf; then
     packageManager="dnf"
+elif command_exists rpm-ostree; then
+    packageManager="rpmostree"
 else
     echo "Unable to detect package manager"
     exit 1
@@ -35,6 +42,9 @@ install_packages() {
         dnf)
             install_with_dnf $(cat "$1")
             ;;
+        rpmostree)
+            install_with_rpmostree $(cat "$1")
+            ;;
         *)
             echo "Unsupported package manager: $packageManager"
             exit 1
@@ -44,6 +54,7 @@ install_packages() {
 
 # Check if the input file exists
 if [ -f "$1" ]; then
+    echo "Installing packages..."
     install_packages "$1"
 else
     echo "Input file not found: $1"

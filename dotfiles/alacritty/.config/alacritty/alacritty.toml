@@ -1,7 +1,3 @@
-import = [
-    "~/.config/alacritty/themes/themes/catppuccin_frappe.toml"
-]
-live_config_reload = true
 
 [ env ]
 TERM = "xterm-256color"
@@ -21,6 +17,12 @@ normal.family = "JetBrainsMono Nerd Font Mono"
 
 #regular
 size = 16
+
+[general]
+live_config_reload = true
+import = [
+    "~/.config/alacritty/themes/themes/catppuccin_frappe.toml"
+]
 
 #for video
 # size = 35.0

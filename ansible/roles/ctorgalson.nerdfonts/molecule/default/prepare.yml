@@ -1,7 +1,0 @@
----
-- name: Prepare
-  hosts: all
-  tasks:
-    - name: Create test user.
-      user:
-        name: "molecule"
