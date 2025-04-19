@@ -12,6 +12,12 @@ return {
     opts = {
       explorer = {},
       picker = {
+        sources = {
+          explorer = {
+            -- auto_close = true,
+            hidden = true,
+          },
+        },
         icons = {
           git = {
             enabled = true, -- show git icons
