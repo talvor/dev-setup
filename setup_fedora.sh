@@ -9,3 +9,4 @@ sudo dnf copr enable pgdev/ghostty -y
 ./scripts/restore_ssh_key.sh
 ./scripts/restore_gpg_key.sh
 ./scripts/install_nerd_fonts.sh
+./scripts/install_eza.sh
