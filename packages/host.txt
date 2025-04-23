@@ -2,10 +2,8 @@ ansible
 direnv
 htop
 alacritty
-ghostty
 stow
 age
-eza
 fzf
 go
 fastfetch
