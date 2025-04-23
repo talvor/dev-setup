@@ -2,6 +2,7 @@
 
 sudo dnf copr enable atim/lazygit -y
 sudo dnf copr enable atim/lazydocker -y
+sudo dnf copr enable pgdev/ghostty -y
 
 ./scripts/install_packages.sh ./packages/host.txt
 

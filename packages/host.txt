@@ -4,7 +4,9 @@ htop
 alacritty
 stow
 age
+flatpak
 fzf
+ghostty
 go
 fastfetch
 lazydocker
