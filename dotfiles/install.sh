@@ -5,12 +5,8 @@ stow --target=$HOME bash
 stow --target=$HOME ghostty
 stow --target=$HOME git
 stow --target=$HOME neovim
-stow --target=$HOME rofi
 stow --target=$HOME starship
-stow --target=$HOME sway
 stow --target=$HOME tmux
-stow --target=$HOME waybar
-stow --target=$HOME wlogout
 stow --target=$HOME zsh
 
 if [ -f $HOME/.bashrc ]; then
