@@ -12,6 +12,7 @@ go
 fastfetch
 lazydocker
 lazygit
+nautilus
 neovim
 nwg-shell
 ripgrep
