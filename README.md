@@ -132,3 +132,29 @@ kubectl|https://dl.k8s.io/release/v1.28.0/bin/darwin/amd64/kubectl|binary
 # Install Terraform from archive
 terraform|https://releases.hashicorp.com/terraform/1.5.0/terraform_1.5.0_darwin_amd64.zip|archive
 ``` 
+
+
+## SSH and GPG Keys Setup (Optional)
+
+### Exporting SSH and GPG Keys
+To securely export your SSH keys, use the `export_ssh_key.sh` or `export_gpg_key.sh` scripts located in the `scripts/` directory. This script encrypts your private key and stores it securely.
+
+```bash
+# Export SSH key
+./scripts/export_ssh_key.sh
+# Export GPG key
+./scripts/export_gpg_key.sh
+```
+
+The encrypted key will be saved in the `vault/` directory. You can transfer this file to another machine for restoration.
+
+### Restoring SSH and GPG Keys
+To restore keys exported from another machine, use the `restore_ssh_key.sh` or `restore_gpg_key.sh` script. This script decrypts and reinstalls your private keys.
+
+```bash
+# Restore SSH key
+./scripts/restore_ssh_key.sh
+# Restore GPG key
+./scripts/restore_gpg_key.sh
+```
+
