@@ -5,10 +5,10 @@
 # google-chrome
 # firefox
 # safari
-# brave-browser
+brave-browser
 
 # Development
-# alacritty
+alacritty
 # docker
 # gitkraken
 # ghostty

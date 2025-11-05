@@ -12,12 +12,12 @@
 #   some-tool#company/tools#https://github.com/company/my-tools.git - Install from custom URL
 
 # Essential development tools
-# git
-# curl
+git
+curl
 # wget
 # tree
 # htop
-# neofetch
+neofetch
 # jq
 # yq
 # k9s

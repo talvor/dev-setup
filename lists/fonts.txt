@@ -3,7 +3,7 @@
 # One font per line, comments start with #
 
 ## Programming Fonts
-# fira-code
+fira-code
 # fira-code-nerd-font
 # jetbrains-mono
 # jetbrains-mono-nerd-font
@@ -18,6 +18,8 @@
 # cascadia-code-pl
 
 ## Popular System Fonts
+NotoSans
+NotoSerif
 # roboto
 # roboto-mono
 # open-sans
