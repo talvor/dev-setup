@@ -1,0 +1,47 @@
+
+# Fonts to install
+# One font per line, comments start with #
+
+## Programming Fonts
+# fira-code
+# fira-code-nerd-font
+# jetbrains-mono
+# jetbrains-mono-nerd-font
+# hack
+# hack-nerd-font
+# source-code-pro
+# meslo-lg
+# meslo-lg-nerd-font
+# inconsolata
+# inconsolata-nerd-font
+# cascadia-code
+# cascadia-code-pl
+
+## Popular System Fonts
+# roboto
+# roboto-mono
+# open-sans
+# lato
+# ubuntu
+# ubuntu-mono
+# pt-sans
+# pt-serif
+# source-sans-pro
+# source-serif-pro
+
+## Serif Fonts
+# crimson-text
+# eb-garamond
+# libre-baskerville
+# playfair-display
+
+## Display Fonts
+# montserrat
+# oswald
+# raleway
+# nunito
+# poppins
+
+## Icon Fonts
+# font-awesome
+# fontawesome 

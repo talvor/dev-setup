@@ -1,0 +1,77 @@
+# GUI Applications to install
+# One app per line, comments start with #
+
+# Browsers
+# google-chrome
+# firefox
+# safari
+# brave-browser
+
+# Development
+# alacritty
+# docker
+# gitkraken
+# ghostty
+# insomnia
+# postman
+# visual-studio-code
+# sublime-text
+# iterm2
+# postman
+# github-desktop
+# sourcetree
+
+# Productivity
+# notion
+# obsidian
+# evernote
+# todoist
+# slack
+# discord
+# zoom
+
+# Media
+# vlc
+# spotify
+# plex
+# handbrake
+# imageoptim
+# gimp
+# blender
+
+# Utilities
+# dropbox
+# google-drive
+# alfred
+# raycast
+# bartender
+# cleanmymac
+# appcleaner
+# the-unarchiver
+# keka
+# dropzone
+# path-finder
+# finder-go
+
+# Security
+# gpg-suite
+# 1password
+# bitwarden
+# malwarebytes
+
+# System Tools
+# stats
+# coconutbattery
+# disk-utility
+# activity-monitor
+# console
+
+# Design
+# figma
+# sketch
+# adobe-creative-cloud
+
+# Communication
+# telegram
+# whatsapp
+# signal 

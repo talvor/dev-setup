@@ -1,0 +1,48 @@
+# CLI Tools to Install from URLs
+# Format: name|url|method
+# Methods: script, binary, archive
+# One tool per line, comments start with #
+
+## Example entries (uncomment and modify URLs as needed):
+# tool-name|https://example.com/install.sh|script
+# binary-tool|https://example.com/tool-binary|binary
+# archive-tool|https://example.com/tool.tar.gz|archive 
+# Popular CLI tools not available via Package Manager or requiring direct installation
+
+## Oh My Zsh (install script)
+# oh-my-zsh|https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh|script
+
+## Starship prompt (install script)
+# starship|https://starship.rs/install.sh|script
+
+## Rust toolchain (install script)
+# rustup|https://sh.rustup.rs|script
+
+## Node Version Manager (install script)
+# nvm|https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh|script
+
+## GitHub CLI (if not using brew)
+# gh|https://github.com/cli/cli/releases/latest/download/gh_2.32.1_macOS_amd64.tar.gz|archive
+
+## k9s - Kubernetes CLI (archive)
+# k9s|https://github.com/derailed/k9s/releases/latest/download/k9s_Darwin_amd64.tar.gz|archive
+
+## kubectl - Kubernetes CLI (binary)
+# kubectl|https://dl.k8s.io/release/v1.28.0/bin/darwin/amd64/kubectl|binary
+
+## Helm - Kubernetes package manager (archive)
+# helm|https://get.helm.sh/helm-v3.12.0-darwin-amd64.tar.gz|archive
+
+## Terraform (archive)
+# terraform|https://releases.hashicorp.com/terraform/1.5.0/terraform_1.5.0_darwin_amd64.zip|archive
+
+## Packer (archive)
+# packer|https://releases.hashicorp.com/packer/1.9.0/packer_1.9.0_darwin_amd64.zip|archive
+
+## Vault (archive)
+# vault|https://releases.hashicorp.com/vault/1.14.0/vault_1.14.0_darwin_amd64.zip|archive
+
+## Consul (archive)
+# consul|https://releases.hashicorp.com/consul/1.16.0/consul_1.16.0_darwin_amd64.zip|archive
+
+

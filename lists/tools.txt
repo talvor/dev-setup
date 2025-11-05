@@ -1,0 +1,84 @@
+# Command Line Tools to Install
+# One tool per line, comments start with #
+# 
+# Format:
+#   tool_name                   - Install from package manager default repos
+#   tool_name#user/repo         - Install from GitHub tap (user/repo)
+#   tool_name#user/repo#url     - Install from custom tap URL
+#
+# Examples:
+#   git                         - Install git from default repos
+#   terraform#hashicorp/tap     - Install terraform from hashicorp/tap GitHub repo
+#   some-tool#company/tools#https://github.com/company/my-tools.git - Install from custom URL
+
+# Essential development tools
+# git
+# curl
+# wget
+# tree
+# htop
+# neofetch
+# jq
+# yq
+# k9s
+# kubectl
+
+## Development tools
+# gh
+# node
+# python3
+# go
+# maven
+# helm
+# rust
+# docker
+# docker-compose
+
+## Text editors and terminal tools
+# direnv
+# neovim
+# tmux
+# zsh
+# starship
+# oh-my-zsh
+# fzf
+# ripgrep
+# fd
+# eza
+# bat
+# exa
+# delta
+
+## File compression and manipulation
+# unzip
+# zip
+# 7zip
+# rsync
+
+## Encryption
+# age
+# gnupg
+
+## Security tools
+# lanyard#atlassian/lanyard#git@bitbucket.org:atlassian/lanyard-tap.git
+
+## Network tools
+# nmap
+# httpie
+# telnet
+
+## Version control helpers
+# tig
+# lazygit
+
+## Database tools
+# postgresql
+# redis
+# sqlite3
+
+## Other useful tools
+# ffmpeg
+# imagemagick
+# poppler
+# pandoc 
+
