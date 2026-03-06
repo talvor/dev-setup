@@ -19,7 +19,7 @@ starship|https://starship.rs/install.sh|script
 # rustup|https://sh.rustup.rs|script
 
 ## Node Version Manager (install script)
-nvm|https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh|script
+#nvm|https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh|script
 
 ## GitHub CLI (if not using brew)
 # gh|https://github.com/cli/cli/releases/latest/download/gh_2.32.1_macOS_amd64.tar.gz|archive

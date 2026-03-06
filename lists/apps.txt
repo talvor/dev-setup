@@ -2,33 +2,14 @@
 # One app per line, comments start with #
 
 # Browsers
-# google-chrome
-# firefox
-# safari
-brave-browser
+org.chromium.Chromium
 
 # Development
-alacritty
-# docker
-# gitkraken
-# ghostty
-# insomnia
-# postman
-# visual-studio-code
-# sublime-text
-# iterm2
-# postman
-# github-desktop
-# sourcetree
+com.axosoft.GitKraken
+com.getpostman.Postman
 
 # Productivity
-# notion
-# obsidian
-# evernote
-# todoist
-# slack
-# discord
-# zoom
+md.obsidian.Obsidian
 
 # Media
 # vlc
@@ -40,18 +21,7 @@ alacritty
 # blender
 
 # Utilities
-# dropbox
-# google-drive
-# alfred
-# raycast
-# bartender
-# cleanmymac
-# appcleaner
-# the-unarchiver
-# keka
-# dropzone
-# path-finder
-# finder-go
+com.dropbox.Client
 
 # Security
 # gpg-suite

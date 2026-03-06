@@ -1,0 +1,41 @@
+source ~/.zshrc.d/loadrc
+
+# history setup
+HISTFILE=$HOME/.zhistory
+SAVEHIST=1000
+HISTSIZE=999
+setopt share_history 
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_verify
+
+# completion using arrow keys (based on history)
+bindkey '^[[A' history-search-backward
+bindkey '^[[B' history-search-forward
+
+# source $HOME/.tmux.d/startup.sh
+
+fpath=(~/.zsh/completions $fpath)
+autoload -Uz compinit && compinit
+
+export GPG_TTY=$(tty)
+
+# if [[ -z "$TMUX" ]] && [[ -t 0 ]] && [[ $- = *i* ]]; then
+#  exec tmux attach-session -t default || exec tmux new-session -s default
+# fi
+
+# Start tmux session
+session="workspace"
+
+if [[ -z "$TMUX" ]] && [[ -t 0 ]] && [[ $- = *i* ]]; then
+  # exec tmux attach-session -t $session || exec tmux new-session -s $session
+  # Check if the session exists, discarding output
+  # We can check $? for the exit status (zero for success, non-zero for failure)
+  tmux has-session -t $session 2>/dev/null
+
+  if [ $? != 0 ]; then
+    exec tmux new-session -s $session
+  fi
+
+  exec tmux attach-session -t $session
+fi

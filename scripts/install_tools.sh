@@ -35,7 +35,8 @@ install_tools() {
 
   log_info "Installing command line tools from $tools_file..."
 
-  # Read tools from file and install
+  # Collect missing tools
+  missing_tools=()
   while IFS= read -r line || [[ -n "$line" ]]; do
     # Skip empty lines and comments
     if [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]]; then
@@ -51,12 +52,19 @@ install_tools() {
     if command -v "${tool}" >/dev/null 2>&1; then
       log_info "$tool is already installed"
     else
-      log_info "Installing $tool..."
+      log_info "$tool will be installed via rpm-ostree"
+      missing_tools+=("$tool")
     fi
   done <"$tools_file"
 
-  log_success "Command line tools installation completed"
+  # Install all missing tools in one rpm-ostree call
+  if [ ${#missing_tools[@]} -gt 0 ]; then
+    log_info "Installing missing tools: ${missing_tools[*]}"
+    rpm-ostree install "${missing_tools[@]}"
+    log_success "Missing tools installed via rpm-ostree"
+  else
+    log_success "All tools are already installed"
+  fi
 }
 
 install_tools
-

@@ -45,11 +45,12 @@ install_apps() {
     # Remove leading/trailing whitespace
     app=$(echo "$app" | xargs)
 
-    # Check if app is already installed
-    if command -v "${app}" >/dev/null 2>&1; then
-      log_info "$app is already installed"
+    # Check if app is already installed via Flatpak
+    if flatpak list | grep -wq "$app"; then
+      log_info "$app is already installed via Flatpak"
     else
-      log_info "Installing $app..."
+      log_info "Installing $app via Flatpak..."
+      flatpak install -y "$app"
     fi
   done <"$apps_file"
 

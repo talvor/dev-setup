@@ -1,0 +1,8 @@
+[user]
+	email = talvor@me.com
+	name = Phillip Hall
+	signingkey = 732D68C26F2B4FB6
+[commit]
+	gpgsign = true
+[push]
+	autoSetupRemote = true
