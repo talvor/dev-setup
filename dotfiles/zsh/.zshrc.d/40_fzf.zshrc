@@ -7,7 +7,7 @@ if [ ! -d $HOME/.fzf-git ]; then
 fi
 
 # Set up fzf key bindings and fuzzy completion
-# eval "$(fzf --zsh)"
+eval "$(fzf --zsh)"
 
 # --- setup fzf theme ---
 fg="#CBE0F0"

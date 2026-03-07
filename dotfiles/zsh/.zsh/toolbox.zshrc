@@ -1,4 +1,12 @@
-source ~/.zshrc.d/loadrc
+# Load .zshrc files from ~/.zshrc.d/
+if [ -d ~/.zshrc.d ]; then
+    for rc in ~/.zshrc.d/*.zshrc; do
+        if [ -f "$rc" ]; then
+            . "$rc"
+        fi
+    done
+fi
+unset rc
 
 # history setup
 HISTFILE=$HOME/.zhistory
@@ -20,12 +28,10 @@ autoload -Uz compinit && compinit
 
 export GPG_TTY=$(tty)
 
-# if [[ -z "$TMUX" ]] && [[ -t 0 ]] && [[ $- = *i* ]]; then
-#  exec tmux attach-session -t default || exec tmux new-session -s default
-# fi
+eval "$(starship init zsh)"
 
 # Start tmux session
-session="workspace"
+session=$(cat /run/.containerenv | sed -n '2 p' | awk -F '"' 'NF>2{print $2}')
 
 if [[ -z "$TMUX" ]] && [[ -t 0 ]] && [[ $- = *i* ]]; then
   # exec tmux attach-session -t $session || exec tmux new-session -s $session

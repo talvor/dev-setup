@@ -1,4 +1,4 @@
-# GUI Applications to install
+# GUI Applications to install from Flathub
 # One app per line, comments start with #
 
 # Browsers

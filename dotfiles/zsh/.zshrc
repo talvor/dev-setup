@@ -13,7 +13,7 @@ bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
 if [[ -f /run/.containerenv && -f /run/.toolboxenv ]]; then
-  source ~/.zshrc.d/toolboxrc
+  source ~/.zsh/toolbox.zshrc
 else
-  source ~/.zshrc.d/hostrc
+  source ~/.zsh/host.zshrc
 fi

@@ -8,9 +8,6 @@
 #   git                         - Install git from default repos
 
 # Essential development tools
-git
-curl
-tmux
 zsh
 alacritty
 stow

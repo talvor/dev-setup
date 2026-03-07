@@ -5,63 +5,13 @@ return {
       "nvim-lua/plenary.nvim",
     },
     opts = {
-      adapters = {
-        acp = {
-          rovodev = function()
-            local helpers = require("codecompanion.adapters.acp.helpers")
-            return {
-              name = "rovodev",
-              type = "acp",
-              formatted_name = "RovoDev",
-              roles = {
-                llm = "assistant",
-                user = "user",
-              },
-              opts = {
-                verbose_output = true,
-              },
-              commands = {
-                default = {
-                  "acli",
-                  "rovodev",
-                  "acp",
-                },
-              },
-              defaults = {},
-              parameters = {
-                protocolVersion = 1,
-                clientCapabilities = {
-                  fs = { readTextFile = true, writeTextFile = true },
-                },
-                clientInfo = {
-                  name = "CodeCompanion.nvim",
-                  version = "1.0.0",
-                },
-              },
-              handlers = {
-                setup = function(self)
-                  return true
-                end,
-                form_messages = function(self, messages, capabilities)
-                  return helpers.form_messages(self, messages, capabilities)
-                end,
-                on_exit = function(self, code) end,
-              },
-            }
-          end,
-        },
-      },
-      strategies = {
+      interactions = {
         chat = {
-          adapter = "rovodev",
-        },
-        inline = {
-          adapter = "rovodev",
-        },
-        cmd = {
-          adapter = "rovodev",
+          adapter = "copilot",
+          model = "gpt",
         },
       },
+      -- NOTE: The log_level is in `opts.opts`
       opts = {
         log_level = "DEBUG",
       },
@@ -77,6 +27,29 @@ return {
     opts = {
       spec = {
         { "<leader>a", group = "CodeCompanion" },
+      },
+    },
+  },
+  {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    build = ":Copilot auth",
+    event = "BufReadPost",
+    opts = {
+      suggestion = {
+        enabled = not vim.g.ai_cmp,
+        auto_trigger = true,
+        hide_during_completion = vim.g.ai_cmp,
+        keymap = {
+          accept = false, -- handled by nvim-cmp / blink.cmp
+          next = "<M-]>",
+          prev = "<M-[>",
+        },
+      },
+      panel = { enabled = false },
+      filetypes = {
+        markdown = true,
+        help = true,
       },
     },
   },

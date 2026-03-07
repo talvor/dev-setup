@@ -13,11 +13,10 @@ antigen bundle git
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle command-not-found
 antigen bundle zsh-users/zsh-syntax-highlighting
-# antigen bundle tmux
-# antigen bundle direnv
+antigen bundle tmux
+antigen bundle direnv
 
 # Tell Antigen that you're done.
 antigen apply
 
 
-# eval "$(starship init zsh)"
