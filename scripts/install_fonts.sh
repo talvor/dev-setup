@@ -50,12 +50,31 @@ install_fonts() {
       log_info "$font is already installed"
     else
       log_info "Installing $font..."
-    fi
+      FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/${font}.zip"
+      TMP_DIR=$(mktemp -d)
+      ZIP_FILE="$TMP_DIR/${font}.zip"
+      FONT_DEST="$HOME/.local/share/fonts"
 
+      mkdir -p "$FONT_DEST"
+
+      log_info "Downloading $FONT_URL..."
+      if curl -L -o "$ZIP_FILE" "$FONT_URL"; then
+        log_info "Extracting $ZIP_FILE..."
+        unzip -o "$ZIP_FILE" -d "$TMP_DIR"
+        find "$TMP_DIR" -type f \( -iname "*.ttf" -o -iname "*.otf" \) -exec cp {} "$FONT_DEST" \;
+        log_info "Cleaning up temporary files..."
+        rm -rf "$TMP_DIR"
+        log_info "Refreshing font cache..."
+        fc-cache -f "$FONT_DEST"
+        log_success "$font installed successfully"
+      else
+        log_error "Failed to download $FONT_URL"
+        rm -rf "$TMP_DIR"
+      fi
+    fi
   done <"$fonts_file"
 
   log_success "Fonts installation completed"
 }
 
 install_fonts
-

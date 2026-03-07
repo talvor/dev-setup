@@ -3,19 +3,9 @@
 # One font per line, comments start with #
 
 ## Programming Fonts
-fira-code
-# fira-code-nerd-font
-# jetbrains-mono
-# jetbrains-mono-nerd-font
-# hack
-# hack-nerd-font
-# source-code-pro
-# meslo-lg
-# meslo-lg-nerd-font
-# inconsolata
-# inconsolata-nerd-font
-# cascadia-code
-# cascadia-code-pl
+FiraCode
+JetBrainsMonoNerdFontMono
+SourceCodePro
 
 ## Popular System Fonts
 NotoSans
