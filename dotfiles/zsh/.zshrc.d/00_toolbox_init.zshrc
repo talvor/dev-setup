@@ -18,11 +18,17 @@ function cleanup {
 
 trap cleanup EXIT
 
+repos=(
+  dejan/lazygit
+)
+
 tools=(
   tmux
   neovim
   direnv
   fzf
+  golang
+  lazygit
 )
 
 if [[ ! -e "$session_dir/init_complete" ]]; then
@@ -31,18 +37,22 @@ if [[ ! -e "$session_dir/init_complete" ]]; then
 
   echo "Initializing toolbox $session"
 
+  echo "Enable COPR"
+  sudo dnf copr enable -y $repos[@]
+
   echo "Installing tools..."
   sudo dnf install --skip-unavailable -y $tools[@]
 
   echo "Installing starship prompt"
-  dnf copr enable -y atim/starship
-  dnf install -y starship
+  curl -sS https://starship.rs/install.sh | sh
 
   echo "Installing eza"
   wget -c https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz -O - | tar xz
   sudo chmod +x eza
   sudo chown root:root eza
   sudo mv eza /usr/local/bin/eza
+
+  curl -s "https://get.sdkman.io" | bash
 
   popd
   mkdir -p "$session_dir"
