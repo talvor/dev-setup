@@ -36,23 +36,34 @@ install_fonts() {
   log_info "Installing fonts from $fonts_file..."
 
   # Read fonts from file and install
-  while IFS= read -r font || [[ -n "$font" ]]; do
+  while IFS= read -r line || [[ -n "$line" ]]; do
     # Skip empty lines and comments
-    if [[ -z "$font" || "$font" =~ ^[[:space:]]*# ]]; then
+    if [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]]; then
       continue
     fi
 
     # Remove leading/trailing whitespace
-    font=$(echo "$font" | xargs)
+    line=$(echo "$line" | xargs)
+
+    # Parse name and optional family
+    IFS='|' read -r name family <<<"$line"
+    name=$(echo "$name" | xargs)
+    family=$(echo "$family" | xargs)
+
+    # Use family for existence check if provided, otherwise use name
+    check_name="$name"
+    if [[ -n "$family" ]]; then
+      check_name="$family"
+    fi
 
     # Check if font is already installed
-    if fc-list | grep -qi "$font"; then
-      log_info "$font is already installed"
+    if fc-list | grep -qi "$check_name"; then
+      log_info "$check_name is already installed"
     else
-      log_info "Installing $font..."
-      FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/${font}.zip"
+      log_info "Installing $name..."
+      FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/${name}.zip"
       TMP_DIR=$(mktemp -d)
-      ZIP_FILE="$TMP_DIR/${font}.zip"
+      ZIP_FILE="$TMP_DIR/${name}.zip"
       FONT_DEST="$HOME/.local/share/fonts"
 
       mkdir -p "$FONT_DEST"
@@ -66,7 +77,7 @@ install_fonts() {
         rm -rf "$TMP_DIR"
         log_info "Refreshing font cache..."
         fc-cache -f "$FONT_DEST"
-        log_success "$font installed successfully"
+        log_success "$name installed successfully"
       else
         log_error "Failed to download $FONT_URL"
         rm -rf "$TMP_DIR"

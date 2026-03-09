@@ -1,11 +1,13 @@
 
-# Fonts to install
+# NerdFonts to install
+# 
+# Format: name|family (family is optional)
 # One font per line, comments start with #
 
 ## Programming Fonts
 FiraCode
 JetBrainsMonoNerdFontMono
-SourceCodePro
+SourceCodePro|SauceCodePro
 
 ## Popular System Fonts
 NotoSans

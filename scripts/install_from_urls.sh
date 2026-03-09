@@ -165,7 +165,7 @@ install_tools_from_urls() {
       if command -v "$name" &>/dev/null; then
         log_info "$name is already installed"
       else
-        log_info "Installing $tool..."
+        log_info "Installing $name..."
         # install_from_url "$url" "$name" "$method"
       fi
     else
@@ -177,4 +177,3 @@ install_tools_from_urls() {
 }
 
 install_tools_from_urls
-

@@ -9,11 +9,8 @@
 # archive-tool|https://example.com/tool.tar.gz|archive 
 # Popular CLI tools not available via Package Manager or requiring direct installation
 
-## Oh My Zsh (install script)
-# oh-my-zsh|https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh|script
-
 ## Starship prompt (install script)
-starship|https://starship.rs/install.sh|script
+# starship|https://starship.rs/install.sh|script
 
 ## Rust toolchain (install script)
 # rustup|https://sh.rustup.rs|script

@@ -29,18 +29,29 @@ log_error() {
   echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Check if script is run on macOS
+log_newline() {
+  echo -e ""
+}
+
+# Check if script is run on fedora atmoic
 check_os() {
-  # if [[ "$OSTYPE" != "darwin"* ]]; then
-  #   log_error "This script is designed for macOS only"
-  #   exit 1
-  # fi
   log_info "Checking OS compatibility..."
+
+  if grep -q '^ID=fedora' /etc/os-release &&
+    (grep -q '^VARIANT_ID=' /etc/os-release && grep -E -q 'atomic|silverblue|kinoite|coreos' /etc/os-release); then
+    log_success "Running on Fedora Atomic/Silverblue/Kinoite/CoreOS"
+  else
+    log_error "Not running on Fedora Atomic"
+    exit 1
+  fi
+
+  log_newline
 }
 
 # Main setup function
 main() {
   log_info "Starting Setup..."
+  log_newline
 
   # Check OS compatibility
   check_os
@@ -55,21 +66,31 @@ main() {
   else
     log_warning "Prerequisites script not found, skipping step 1."
   fi
+  log_newline
 
   log_info "Step 2: Installing command line tools..."
   ./scripts/install_tools.sh
+  log_newline
 
   log_info "Step 3: Installing applications..."
   ./scripts/install_apps.sh
+  log_newline
 
   log_info "Step 4: Installing fonts..."
   ./scripts/install_fonts.sh
+  log_newline
 
   log_info "Step 5: Installing tools from URLs..."
   ./scripts/install_from_urls.sh
+  log_newline
 
-  log_info "Step 6: Setting up dotfiles..."
+  log_info "Step 6: Running all install scripts..."
+  ./scripts/run_all_install_scripts.sh
+  log_newline
+
+  log_info "Step 7: Setting up dotfiles..."
   ./scripts/setup_dotfiles.sh
+  log_newline
 
   log_success "Setup completed successfully!"
   log_info "You may need to restart your terminal or source your shell configuration."

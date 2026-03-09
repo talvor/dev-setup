@@ -243,6 +243,9 @@ exec_always {
 # Notification
 exec_always mako
 
+# Autotiling
+exec_always autotiling
+
 ## Window decoration
 include catppuccin-frappe
 # target                 title     bg    text   indicator  border
