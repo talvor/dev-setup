@@ -38,7 +38,7 @@ setup_dotfiles() {
     # Check if stow is installed
     if ! command -v stow &> /dev/null; then
         log_error "GNU Stow is not installed. Please install it first."
-        log_info "Run: brew install stow"
+        log_info "Run: sudo apt-get install -y stow"
         exit 1
     fi
     

@@ -2,6 +2,11 @@
 
 Automated Development setup using package manager and dotfiles management with GNU Stow.
 
+> This branch (`popos`) targets **Pop!_OS** (and other Debian/Ubuntu-based
+> distributions). Command line tools are installed with `apt`, GUI applications
+> with Flatpak/Flathub, and Nerd Fonts are downloaded from GitHub releases.
+> Other branches target different platforms (`fedora-atomic`, `macos`, `omarchy`).
+
 ## Features
 
 - ✅ Install command line tools
@@ -13,10 +18,8 @@ Automated Development setup using package manager and dotfiles management with G
 
 ## Prerequisites
 
-- Supported OS (and package manager)
-  - macOS (with Homebrew)
-  - Fedora Linux (with DNF)
-  - Arch Linux (with Pacman)
+- Pop!_OS (or another Debian/Ubuntu-based distribution with `apt` and Flatpak)
+- `sudo` privileges
 - Internet connection
 
 ## Quick Start
@@ -74,9 +77,9 @@ dev-setup/
 ├── setup.sh              # Main setup script
 ├── scripts/              # Individual setup scripts
 ├── lists/                # Lists of things to install
-│   ├── tools.txt         # Homebrew CLI tools
-│   ├── apps.txt          # Homebrew Cask applications
-│   ├── fonts.txt         # Homebrew fonts
+│   ├── tools.txt         # APT command line packages
+│   ├── apps.txt          # Flatpak application IDs (Flathub)
+│   ├── fonts.txt         # Nerd Fonts (downloaded from GitHub releases)
 │   └── urls.txt          # CLI tools from URLs
 ├── dotfiles/             # Your dotfiles (managed by stow)
 └── README.md             # This file
@@ -127,10 +130,10 @@ tool-name|download-url|installation-method
 oh-my-zsh|https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh|script
 
 # Install kubectl binary
-kubectl|https://dl.k8s.io/release/v1.28.0/bin/darwin/amd64/kubectl|binary
+kubectl|https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl|binary
 
 # Install Terraform from archive
-terraform|https://releases.hashicorp.com/terraform/1.5.0/terraform_1.5.0_darwin_amd64.zip|archive
+terraform|https://releases.hashicorp.com/terraform/1.5.0/terraform_1.5.0_linux_amd64.zip|archive
 ``` 
 
 

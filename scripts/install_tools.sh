@@ -35,6 +35,10 @@ install_tools() {
 
   log_info "Installing command line tools from $tools_file..."
 
+  # Refresh package metadata once up front
+  log_info "Updating APT package lists..."
+  sudo apt-get update
+
   # Collect missing tools
   missing_tools=()
   while IFS= read -r line || [[ -n "$line" ]]; do
@@ -49,19 +53,19 @@ install_tools() {
     tool="$line"
 
     # Check if tool is already installed
-    if command -v "${tool}" >/dev/null 2>&1; then
+    if command -v "${tool}" >/dev/null 2>&1 || dpkg -s "${tool}" >/dev/null 2>&1; then
       log_info "$tool is already installed"
     else
-      log_info "$tool will be installed via rpm-ostree"
+      log_info "$tool will be installed via apt"
       missing_tools+=("$tool")
     fi
   done <"$tools_file"
 
-  # Install all missing tools in one rpm-ostree call
+  # Install all missing tools in one apt call
   if [ ${#missing_tools[@]} -gt 0 ]; then
     log_info "Installing missing tools: ${missing_tools[*]}"
-    rpm-ostree install "${missing_tools[@]}"
-    log_success "Missing tools installed via rpm-ostree"
+    sudo apt-get install -y "${missing_tools[@]}"
+    log_success "Missing tools installed via apt"
   else
     log_success "All tools are already installed"
   fi

@@ -33,6 +33,18 @@ install_apps() {
     exit 1
   fi
 
+  if ! command -v flatpak >/dev/null 2>&1; then
+    log_error "flatpak is not installed. Run ./scripts/install_prerequisites.sh first."
+    exit 1
+  fi
+
+  # Ensure the Flathub remote is configured (system-wide)
+  if ! flatpak remotes --columns=name | grep -qx "flathub"; then
+    log_info "Adding Flathub remote..."
+    sudo flatpak remote-add --if-not-exists flathub \
+      https://dl.flathub.org/repo/flathub.flatpakrepo
+  fi
+
   log_info "Installing GUI applications from $apps_file..."
 
   # Read apps from file and install
@@ -46,11 +58,11 @@ install_apps() {
     app=$(echo "$app" | xargs)
 
     # Check if app is already installed via Flatpak
-    if flatpak list | grep -wq "$app"; then
+    if flatpak list --columns=application | grep -qx "$app"; then
       log_info "$app is already installed via Flatpak"
     else
       log_info "Installing $app via Flatpak..."
-      flatpak install -y "$app"
+      flatpak install -y flathub "$app"
     fi
   done <"$apps_file"
 

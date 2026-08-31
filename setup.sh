@@ -33,15 +33,29 @@ log_newline() {
   echo -e ""
 }
 
-# Check if script is run on fedora atmoic
+# Check if script is run on Pop!_OS (or a compatible Ubuntu/Debian base)
 check_os() {
   log_info "Checking OS compatibility..."
 
-  if grep -q '^ID=fedora' /etc/os-release &&
-    (grep -q '^VARIANT_ID=' /etc/os-release && grep -E -q 'atomic|silverblue|kinoite|coreos' /etc/os-release); then
-    log_success "Running on Fedora Atomic/Silverblue/Kinoite/CoreOS"
+  if [ ! -f /etc/os-release ]; then
+    log_error "/etc/os-release not found; cannot determine OS"
+    exit 1
+  fi
+
+  . /etc/os-release
+
+  if [ "${ID:-}" = "pop" ]; then
+    log_success "Running on Pop!_OS ${VERSION_ID:-}"
+  elif [ "${ID:-}" = "ubuntu" ] || [ "${ID:-}" = "debian" ] ||
+    echo "${ID_LIKE:-}" | grep -E -q '(ubuntu|debian)'; then
+    log_warning "Running on ${PRETTY_NAME:-$ID} (Pop!_OS-compatible, continuing)"
   else
-    log_error "Not running on Fedora Atomic"
+    log_error "Not running on Pop!_OS or a Debian/Ubuntu-based distribution"
+    exit 1
+  fi
+
+  if ! command -v apt-get >/dev/null 2>&1; then
+    log_error "apt-get not found; this setup requires an APT-based system"
     exit 1
   fi
 
