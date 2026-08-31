@@ -46,3 +46,4 @@ if [[ -f /run/.containerenv && -f /run/.toolboxenv ]]; then
   echo "Switching to zsh..."
   exec "$ZSH_PATH"
 fi
+alias code="flatpak run com.visualstudio.code"

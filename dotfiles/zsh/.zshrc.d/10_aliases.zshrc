@@ -13,3 +13,4 @@ alias k='kubectl'
 alias v='NVIM_APPNAME=nvim-lazyvim nvim'
 alias nvim-split='~/.tmux.d/nvim_split.sh'
 
+alias code="flatpak-spawn --host flatpak run com.visualstudio.code"
