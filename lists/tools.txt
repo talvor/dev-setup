@@ -1,15 +1,24 @@
 # Command Line Tools to Install
 # One tool per line, comments start with #
-# 
+#
 # Format:
-#   tool_name                   - Install from package manager default repos
+#   tool_name                          - Install from package manager default repos
+#   name|key_url|apt_repo[|package]    - Install from a custom APT repository
+#     name      - identifies the repo (used for the keyring and sources.list.d filenames)
+#     key_url   - URL to the repo's GPG signing key (ASCII-armored)
+#     apt_repo  - "<repo_url> <suite> <component...>", as in a normal deb line
+#     package   - apt package name to install (optional, defaults to name)
 #
 # Examples:
-#   git                         - Install git from default repos
+#   git                                                                                      - Install git from default repos
+#   claude-desktop|https://downloads.claude.ai/claude-desktop/key.asc|https://downloads.claude.ai/claude-desktop/apt/stable stable main   - Install from a custom APT repo
 
 # Essential development tools
 zsh
 alacritty
 tmux
 stow
+
+# Tools from custom APT repositories
+claude-desktop|https://downloads.claude.ai/claude-desktop/key.asc|https://downloads.claude.ai/claude-desktop/apt/stable stable main
 

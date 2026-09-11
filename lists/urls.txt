@@ -43,3 +43,5 @@ starship|https://starship.rs/install.sh|script
 # consul|https://releases.hashicorp.com/consul/1.16.0/consul_1.16.0_darwin_amd64.zip|archive
 
 
+# Claude code cli
+claude|https://claude.ai/install.sh|script
