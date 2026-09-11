@@ -10,7 +10,7 @@
 # Popular CLI tools not available via Package Manager or requiring direct installation
 
 ## Starship prompt (install script)
-# starship|https://starship.rs/install.sh|script
+starship|https://starship.rs/install.sh|script
 
 ## Rust toolchain (install script)
 # rustup|https://sh.rustup.rs|script

@@ -21,9 +21,9 @@ normal.family = "FiraCode Nerd Font Mono"
 #regular
 size = 12
 
-[general]
-live_config_reload = true
-import = ["~/.config/alacritty/themes/catppuccin_frappe.toml"]
+#[general]
+#live_config_reload = true
+#import = ["~/.config/alacritty/themes/catppuccin_frappe.toml"]
 
 #for video
 # size = 35.0

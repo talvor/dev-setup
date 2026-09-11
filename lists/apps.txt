@@ -7,6 +7,7 @@ org.chromium.Chromium
 # Development
 com.axosoft.GitKraken
 com.getpostman.Postman
+com.visualstudio.code
 
 # Productivity
 md.obsidian.Obsidian

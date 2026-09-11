@@ -10,5 +10,6 @@
 # Essential development tools
 zsh
 alacritty
+tmux
 stow
 

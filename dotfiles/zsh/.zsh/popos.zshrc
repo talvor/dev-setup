@@ -27,11 +27,15 @@ fpath=(~/.zsh/completions $fpath)
 autoload -Uz compinit && compinit
 
 export GPG_TTY=$(tty)
+gpg-connect-agent updatestartuptty /bye
+unset SSH_AGENT_PID
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 
 eval "$(starship init zsh)"
 
 # Start tmux session
-session=$(cat /run/.containerenv | sed -n '2 p' | awk -F '"' 'NF>2{print $2}')
+# session=$(cat /run/.containerenv | sed -n '2 p' | awk -F '"' 'NF>2{print $2}')
+session="workspace"
 
 if [[ -z "$TMUX" ]] && [[ -t 0 ]] && [[ $- = *i* ]]; then
   # exec tmux attach-session -t $session || exec tmux new-session -s $session
