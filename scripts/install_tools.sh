@@ -1,67 +1,38 @@
 #!/bin/bash
 
-# Install command line tools from file
+# Install command line tools from lists/common/tools.txt and
+# lists/<os>/tools.txt using the package manager of the detected OS.
+# See ./install_tools.sh --help for options (--dry-run, --os).
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-log_info() {
-  echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-  echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-  echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-  echo -e "${RED}[ERROR]${NC} $1"
-}
+# shellcheck source=../lib/common.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"
+init_script "$@"
 
 install_tools() {
-  local tools_file="lists/tools.txt"
+  check_lists tools || exit 1
 
-  if [[ ! -f "$tools_file" ]]; then
-    log_error "Tools file not found: $tools_file"
-    exit 1
-  fi
+  log_info "Installing command line tools for $DEV_SETUP_OS..."
 
-  log_info "Installing command line tools from $tools_file..."
+  pm_tools_begin
 
-  # Collect missing tools
-  missing_tools=()
-  while IFS= read -r line || [[ -n "$line" ]]; do
-    # Skip empty lines and comments
-    if [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]]; then
-      continue
-    fi
+  # Collect missing tools, and add any repo they need first
+  local missing_tools=() line tool
+  while IFS= read -r line; do
+    tool="$(pm_tool_name "$line")"
 
-    # Remove leading/trailing whitespace
-    line=$(echo "$line" | xargs)
-
-    tool="$line"
-
-    # Check if tool is already installed
-    if command -v "${tool}" >/dev/null 2>&1; then
+    if pm_tool_installed "$tool"; then
       log_info "$tool is already installed"
-    else
-      log_info "$tool will be installed via rpm-ostree"
+    elif pm_tool_prepare "$line"; then
+      log_info "$tool will be installed"
       missing_tools+=("$tool")
+    else
+      log_error "Skipping $tool"
     fi
-  done <"$tools_file"
+  done < <(list_entries tools)
 
-  # Install all missing tools in one rpm-ostree call
+  # Install all missing tools in one call
   if [ ${#missing_tools[@]} -gt 0 ]; then
-    log_info "Installing missing tools: ${missing_tools[*]}"
-    rpm-ostree install "${missing_tools[@]}"
-    log_success "Missing tools installed via rpm-ostree"
+    pm_tools_install "${missing_tools[@]}"
   else
     log_success "All tools are already installed"
   fi

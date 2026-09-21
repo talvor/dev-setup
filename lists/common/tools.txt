@@ -1,0 +1,18 @@
+# Command Line Tools to Install (all operating systems)
+# One tool per line, comments start with #
+#
+# Only add a tool here if its package name is identical in every package
+# manager we support (rpm-ostree, apt, brew, pacman). Anything named
+# differently, or missing, on an OS goes in lists/<os>/tools.txt instead.
+# The OS list is read after this one and only ever adds to it.
+#
+# Format:
+#   tool_name                   - Install from package manager default repos
+#
+# Examples:
+#   git                         - Install git from default repos
+
+# Essential development tools
+zsh
+tmux
+stow

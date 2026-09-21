@@ -1,0 +1,13 @@
+# Command Line Tools to Install on Omarchy (pacman)
+# One package per line, comments start with #
+# Added to the tools in lists/common/tools.txt.
+#
+# UNTESTED: never run on an Omarchy machine. Check the names with
+# `pacman -Si <package>` and preview with `./setup.sh --os omarchy --dry-run`.
+#
+# Only official repository packages work (no AUR).
+#
+# Format:
+#   package_name                - Install with pacman
+
+alacritty

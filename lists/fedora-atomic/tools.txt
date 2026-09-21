@@ -1,0 +1,9 @@
+# Command Line Tools to Install on Fedora Atomic (rpm-ostree)
+# One package per line, comments start with #
+# Added to the tools in lists/common/tools.txt. Packages are layered with
+# rpm-ostree, so a reboot is needed before they show up.
+#
+# Format:
+#   package_name                - Layer a package from the Fedora repos
+
+alacritty

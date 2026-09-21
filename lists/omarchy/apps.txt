@@ -1,0 +1,13 @@
+# GUI Applications to install on Omarchy (pacman)
+# One package per line, comments start with #
+# Added to the apps in lists/common/apps.txt.
+#
+# UNTESTED: never run on an Omarchy machine. Only official repository
+# packages work (no AUR).
+#
+# Format:
+#   package_name                - Install with pacman
+#
+# Examples:
+# chromium
+# obsidian

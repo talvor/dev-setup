@@ -1,29 +1,18 @@
 #!/bin/bash
 
-# Install CLI tools from URLs
+# Install CLI tools from URLs listed in lists/common/urls.txt and
+# lists/<os>/urls.txt. Entries are name|url|method (script, binary, archive).
+# See ./install_from_urls.sh --help for options (--dry-run, --os).
+#
+# NOTE: the actual install call in install_tools_from_urls is commented out (as
+# it was on every branch), so this script only logs what it would install.
+# Uncomment the install_from_url line there to enable installing.
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# shellcheck source=../lib/common.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"
+init_script "$@"
 
-log_info() {
-  echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-  echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-  echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-  echo -e "${RED}[ERROR]${NC} $1"
-}
+TEMP_DIR=""
 
 # Create temporary directory for downloads
 create_temp_dir() {
@@ -39,13 +28,18 @@ cleanup_temp_dir() {
   fi
 }
 
-# Install a tool from URL
-install_from_url() {
+# Install a tool from URL (runs in a subshell so the cd does not leak)
+install_from_url() (
   local url="$1"
   local name="$2"
   local install_method="$3"
 
   log_info "Installing $name from $url..."
+
+  if is_dry_run; then
+    log_dry "would install $name from $url (method: $install_method)"
+    return 0
+  fi
 
   cd "$TEMP_DIR" || return 1
 
@@ -62,7 +56,8 @@ install_from_url() {
     ;;
   "binary")
     # Download binary and install to /usr/local/bin
-    local filename=$(basename "$url")
+    local filename
+    filename=$(basename "$url")
     local binary_name="$name"
 
     if curl -fsSL -o "$filename" "$url"; then
@@ -81,7 +76,8 @@ install_from_url() {
     ;;
   "archive")
     # Download archive, extract, and install
-    local filename=$(basename "$url")
+    local filename
+    filename=$(basename "$url")
     local binary_name="$name"
 
     if curl -fsSL -o "$filename" "$url"; then
@@ -103,7 +99,8 @@ install_from_url() {
       esac
 
       # Find the binary and install it
-      local binary_path=$(find . -name "$binary_name" -type f -executable | head -1)
+      local binary_path
+      binary_path=$(find . -name "$binary_name" -type f -perm -u+x | head -1)
       if [[ -n "$binary_path" ]]; then
         if sudo cp "$binary_path" "/usr/local/bin/$binary_name"; then
           sudo chmod +x "/usr/local/bin/$binary_name"
@@ -127,38 +124,27 @@ install_from_url() {
     return 1
     ;;
   esac
-}
+)
 
 install_tools_from_urls() {
-  local urls_file="lists/urls.txt"
+  check_lists urls || exit 1
 
-  if [[ ! -f "$urls_file" ]]; then
-    log_error "URLs file not found: $urls_file"
-    exit 1
+  if ! is_dry_run; then
+    create_temp_dir
+    # Clean up on exit
+    trap cleanup_temp_dir EXIT
   fi
 
-  # Create temporary directory
-  create_temp_dir
+  log_info "Installing CLI tools from URLs for $DEV_SETUP_OS..."
 
-  # Set trap to clean up on exit
-  trap cleanup_temp_dir EXIT
-
-  log_info "Installing CLI tools from URLs listed in $urls_file..."
-
-  # Read URLs from file and install
-  while IFS= read -r line || [[ -n "$line" ]]; do
-    # Skip empty lines and comments
-    if [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]]; then
-      continue
-    fi
-
-    # Remove leading/trailing whitespace
-    line=$(echo "$line" | xargs)
-
+  local line
+  while IFS= read -r line; do
     # Parse line format: name|url|method
     if [[ "$line" =~ ^([^|]+)\|([^|]+)\|([^|]+)$ ]]; then
       local name="${BASH_REMATCH[1]}"
+      # shellcheck disable=SC2034 # only used by the commented-out install call
       local url="${BASH_REMATCH[2]}"
+      # shellcheck disable=SC2034
       local method="${BASH_REMATCH[3]}"
 
       # Check if tool is already installed
@@ -171,7 +157,7 @@ install_tools_from_urls() {
     else
       log_warning "Invalid line format (should be name|url|method): $line"
     fi
-  done <"$urls_file"
+  done < <(list_entries urls)
 
   log_success "URL-based tools installation completed"
 }

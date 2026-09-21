@@ -1,0 +1,5 @@
+# NerdFonts to install on macOS
+# Added to the fonts in lists/common/fonts.txt.
+#
+# Format: name|family (family is optional)
+# One font per line, comments start with #

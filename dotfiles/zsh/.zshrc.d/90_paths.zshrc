@@ -1,2 +1,5 @@
-#export GOPATH=$HOME/go
-#export PATH=${PATH}:`go env GOPATH`/bin:$HOME/.local/bin
+# setup GO
+if command -v go >/dev/null 2>&1; then
+  export PATH="$PATH:$(go env GOPATH)/bin"
+fi
+export PATH="$HOME/.local/bin:$PATH"

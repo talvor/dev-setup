@@ -1,5 +1,6 @@
-# GUI Applications to install from Flathub
+# GUI Applications to install on Pop!_OS (from Flathub)
 # One app per line, comments start with #
+# Added to the apps in lists/common/apps.txt.
 
 # Browsers
 org.chromium.Chromium
@@ -7,6 +8,7 @@ org.chromium.Chromium
 # Development
 com.axosoft.GitKraken
 com.getpostman.Postman
+com.visualstudio.code
 
 # Productivity
 md.obsidian.Obsidian
@@ -44,4 +46,4 @@ com.dropbox.Client
 # Communication
 # telegram
 # whatsapp
-# signal 
+# signal

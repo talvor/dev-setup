@@ -1,0 +1,18 @@
+# Start a tmux session for interactive shells. The session name comes from the
+# OS config (DEV_SETUP_TMUX_SESSION); without one nothing is started.
+session=$DEV_SETUP_TMUX_SESSION
+
+# source $HOME/.tmux.d/startup.sh
+
+if [[ -n "$session" ]] && [[ -z "$TMUX" ]] && [[ -t 0 ]] && [[ $- = *i* ]]; then
+  # exec tmux attach-session -t $session || exec tmux new-session -s $session
+  # Check if the session exists, discarding output
+  # We can check $? for the exit status (zero for success, non-zero for failure)
+  tmux has-session -t $session 2>/dev/null
+
+  if [ $? != 0 ]; then
+    exec tmux new-session -s $session
+  fi
+
+  exec tmux attach-session -t $session
+fi

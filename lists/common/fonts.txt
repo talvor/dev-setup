@@ -1,6 +1,9 @@
 
-# NerdFonts to install
-# 
+# NerdFonts to install (all operating systems)
+#
+# Fonts are downloaded from the Nerd Fonts GitHub releases on every OS.
+# The OS list (lists/<os>/fonts.txt) is read after this one and only adds to it.
+#
 # Format: name|family (family is optional)
 # One font per line, comments start with #
 
@@ -38,4 +41,4 @@ NotoSerif
 
 ## Icon Fonts
 # font-awesome
-# fontawesome 
+# fontawesome

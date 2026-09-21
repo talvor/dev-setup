@@ -1,0 +1,8 @@
+# CLI Tools to Install from URLs on Fedora Atomic
+# Added to the tools in lists/common/urls.txt.
+# Format: name|url|method
+# Methods: script, binary, archive
+# One tool per line, comments start with #
+
+## kubectl - Kubernetes CLI (binary)
+# kubectl|https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl|binary

@@ -1,71 +1,57 @@
 #!/bin/bash
 
 # Setup dotfiles using GNU Stow
+# See ./setup_dotfiles.sh --help for options (--dry-run, --os).
+#
+# Every package under dotfiles/ is stowed on every OS. The zsh package holds
+# one file per OS in ~/.zsh; ~/.zshrc sources the right one at shell start.
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
+# shellcheck source=../lib/common.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"
+init_script "$@"
 
 setup_dotfiles() {
-    local dotfiles_dir="dotfiles"
-    
-    if [[ ! -d "$dotfiles_dir" ]]; then
-        log_warning "Dotfiles directory not found: $dotfiles_dir"
-        log_info "Creating example dotfiles directory structure..."
-        mkdir -p "$dotfiles_dir"
-        return 0
+  local dotfiles_dir="$DEV_SETUP_ROOT/dotfiles"
+
+  if [[ ! -d "$dotfiles_dir" ]]; then
+    log_warning "Dotfiles directory not found: $dotfiles_dir"
+    log_info "Creating example dotfiles directory structure..."
+    run mkdir -p "$dotfiles_dir"
+    return 0
+  fi
+
+  # Check if stow is installed
+  if ! command -v stow &>/dev/null; then
+    if is_dry_run; then
+      log_warning "GNU Stow is not installed; continuing because this is a dry run"
+    else
+      log_error "GNU Stow is not installed. Please install it first."
+      log_info "Run: $PM_INSTALL_CMD stow"
+      exit 1
     fi
-    
-    # Check if stow is installed
-    if ! command -v stow &> /dev/null; then
-        log_error "GNU Stow is not installed. Please install it first."
-        log_info "Run: brew install stow"
-        exit 1
+  fi
+
+  log_info "Setting up dotfiles using GNU Stow..."
+
+  # Stow each subdirectory
+  local dir package_name
+  for dir in "$dotfiles_dir"/*/; do
+    if [[ -d "$dir" ]]; then
+      package_name=$(basename "$dir")
+      log_info "Stowing $package_name..."
+
+      if is_dry_run; then
+        log_dry "would run: stow -d $dotfiles_dir -t $HOME $package_name"
+      elif stow -d "$dotfiles_dir" -t "$HOME" "$package_name"; then
+        log_success "$package_name stowed successfully"
+      else
+        log_error "Failed to stow $package_name"
+      fi
     fi
-    
-    log_info "Setting up dotfiles using GNU Stow..."
-    
-    # Change to dotfiles directory
-    cd "$dotfiles_dir" || exit 1
-    
-    # Stow each subdirectory
-    for dir in */; do
-        if [[ -d "$dir" ]]; then
-            package_name=$(basename "$dir")
-            log_info "Stowing $package_name..."
-            
-            if stow -t "$HOME" "$package_name"; then
-                log_success "$package_name stowed successfully"
-            else
-                log_error "Failed to stow $package_name"
-            fi
-        fi
-    done
-    
-    # Return to original directory
-    cd - > /dev/null || exit 1
-    
-    log_success "Dotfiles setup completed"
-    log_info "Your dotfiles are now symlinked from $dotfiles_dir to your home directory"
+  done
+
+  log_success "Dotfiles setup completed"
+  log_info "Your dotfiles are now symlinked from $dotfiles_dir to your home directory"
 }
 
-setup_dotfiles 
+setup_dotfiles

@@ -1,0 +1,12 @@
+# CLI Tools to Install from URLs on Pop!_OS
+# Added to the tools in lists/common/urls.txt.
+# Format: name|url|method
+# Methods: script, binary, archive
+# One tool per line, comments start with #
+
+## kubectl - Kubernetes CLI (binary)
+# kubectl|https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl|binary
+
+lazydocker|https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh|script
+
+herdr|https://herdr.dev/install.sh|script

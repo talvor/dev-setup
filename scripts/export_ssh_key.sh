@@ -2,7 +2,7 @@
 
 echo "Exporting SSH key..."
 
-TEMP_DIR=`mktemp -d`
+TEMP_DIR=$(mktemp -d)
 
 # check if tmp dir was created
 if [[ ! "$TEMP_DIR" || ! -d "$TEMP_DIR" ]]; then
@@ -74,20 +74,16 @@ EXPORTED_KEY_FILE="$TEMP_DIR/$SSH_FILE"
 
 # Copy the SSH key to temp directory
 echo "Copying SSH key to temporary location..."
-cp "$SSH_DIR/$SSH_FILE" "$EXPORTED_KEY_FILE"
-
 # Check if copy was successful
-if [ $? -ne 0 ]; then
+if ! cp "$SSH_DIR/$SSH_FILE" "$EXPORTED_KEY_FILE"; then
   echo "Failed to copy SSH key."
   exit 1
 fi
 
 # Encrypt the SSH key with age
 echo "Encrypting the SSH key..."
-age -e -p -o "$ENCRYPTED_FILE" "$EXPORTED_KEY_FILE"
-
 # Check if encryption was successful
-if [ $? -ne 0 ]; then
+if ! age -e -p -o "$ENCRYPTED_FILE" "$EXPORTED_KEY_FILE"; then
   echo "Encryption failed."
   exit 1
 fi

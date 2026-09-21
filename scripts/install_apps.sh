@@ -1,58 +1,28 @@
 #!/bin/bash
 
-# Install GUI applications
+# Install GUI applications from lists/common/apps.txt and lists/<os>/apps.txt
+# using the app source of the detected OS (Flathub, Homebrew casks, pacman).
+# See ./install_apps.sh --help for options (--dry-run, --os).
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-log_info() {
-  echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-  echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-  echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-  echo -e "${RED}[ERROR]${NC} $1"
-}
+# shellcheck source=../lib/common.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"
+init_script "$@"
 
 install_apps() {
-  local apps_file="lists/apps.txt"
+  check_lists apps || exit 1
 
-  if [[ ! -f "$apps_file" ]]; then
-    log_error "Apps file not found: $apps_file"
-    exit 1
-  fi
+  pm_apps_prepare
 
-  log_info "Installing GUI applications from $apps_file..."
+  log_info "Installing GUI applications for $DEV_SETUP_OS..."
 
-  # Read apps from file and install
-  while IFS= read -r app || [[ -n "$app" ]]; do
-    # Skip empty lines and comments
-    if [[ -z "$app" || "$app" =~ ^[[:space:]]*# ]]; then
-      continue
-    fi
-
-    # Remove leading/trailing whitespace
-    app=$(echo "$app" | xargs)
-
-    # Check if app is already installed via Flatpak
-    if flatpak list | grep -wq "$app"; then
-      log_info "$app is already installed via Flatpak"
+  local app
+  while IFS= read -r app; do
+    if pm_app_installed "$app"; then
+      log_info "$app is already installed"
     else
-      log_info "Installing $app via Flatpak..."
-      flatpak install -y "$app"
+      pm_app_install "$app"
     fi
-  done <"$apps_file"
+  done < <(list_entries apps)
 
   log_success "GUI applications installation completed"
 }
