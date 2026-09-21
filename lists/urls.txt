@@ -47,3 +47,5 @@ starship|https://starship.rs/install.sh|script
 claude|https://claude.ai/install.sh|script
 
 lazydocker|https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh|script
+
+herdr|https://herdr.dev/install.sh|script
