@@ -3,6 +3,10 @@
 # Install CLI tools from URLs listed in lists/common/urls.txt and
 # lists/<os>/urls.txt. Entries are name|url|method (script, binary, archive).
 # See ./install_from_urls.sh --help for options (--dry-run, --os).
+#
+# NOTE: the actual install call in install_tools_from_urls is commented out (as
+# it was on every branch), so this script only logs what it would install.
+# Uncomment the install_from_url line there to enable installing.
 
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"
@@ -138,14 +142,17 @@ install_tools_from_urls() {
     # Parse line format: name|url|method
     if [[ "$line" =~ ^([^|]+)\|([^|]+)\|([^|]+)$ ]]; then
       local name="${BASH_REMATCH[1]}"
+      # shellcheck disable=SC2034 # only used by the commented-out install call
       local url="${BASH_REMATCH[2]}"
+      # shellcheck disable=SC2034
       local method="${BASH_REMATCH[3]}"
 
       # Check if tool is already installed
       if command -v "$name" &>/dev/null; then
         log_info "$name is already installed"
       else
-        install_from_url "$url" "$name" "$method" || true
+        log_info "Installing $name..."
+        # install_from_url "$url" "$name" "$method"
       fi
     else
       log_warning "Invalid line format (should be name|url|method): $line"

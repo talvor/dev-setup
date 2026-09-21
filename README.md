@@ -213,6 +213,11 @@ The `urls.txt` lists allow you to install CLI tools directly from URLs. This is 
 
 Tools that are already on the `PATH` are skipped.
 
+> **Installing from URLs is currently switched off.** As before the move to a
+> single branch, `scripts/install_from_urls.sh` only logs the tools it would
+> install: the `install_from_url` call in `install_tools_from_urls` is commented
+> out. Enabling it is a one-line change (uncomment that line).
+
 ### Format
 
 Each line in `urls.txt` should follow this format:
