@@ -43,8 +43,12 @@ setup_apt_repo() {
     log_dry "would download $key_url to $keyring and write $list_file"
     return 0
   fi
-  sudo curl -fsSLo "$keyring" "$key_url"
-  echo "deb [signed-by=${keyring}] ${apt_repo}" | sudo tee "$list_file" >/dev/null
+  if ! sudo curl -fsSLo "$keyring" "$key_url" ||
+    ! echo "deb [signed-by=${keyring}] ${apt_repo}" | sudo tee "$list_file" >/dev/null; then
+    sudo rm -f "$keyring" "$list_file"
+    log_error "Failed to add APT repository for $name"
+    return 1
+  fi
 }
 
 # --- Tools (apt) ---
@@ -71,7 +75,7 @@ pm_tool_installed() {
 
 pm_tool_prepare() {
   if [[ "$1" =~ ^([^|]+)\|([^|]+)\|([^|]+)(\|([^|]+))?$ ]]; then
-    setup_apt_repo "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}"
+    setup_apt_repo "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}" || return 1
     APT_REPOS_ADDED=true
   fi
 }
