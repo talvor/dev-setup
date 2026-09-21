@@ -1,0 +1,7 @@
+# GUI Applications to install (all operating systems)
+# One app per line, comments start with #
+#
+# App ids are specific to the app source (Flathub ids, Homebrew casks, pacman
+# packages), so nothing is shared between operating systems today. Add an app
+# here only if its id is identical on every OS; otherwise use lists/<os>/apps.txt.
+# The OS list is read after this one and only ever adds to it.

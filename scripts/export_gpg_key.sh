@@ -2,7 +2,7 @@
 
 echo "Exporting GPG keys..."
 
-TEMP_DIR=`mktemp -d`
+TEMP_DIR=$(mktemp -d)
 echo "Created temp dir: $TEMP_DIR"
 
 # check if tmp dir was created
@@ -40,20 +40,16 @@ echo "Found primary key: $PRIMARY_KEY_ID"
 
 # Export the GPG key (including all subkeys)
 echo "Exporting the GPG key..."
-gpg --export-secret-keys --armor "$PRIMARY_KEY_ID" > "$EXPORTED_KEY_FILE"
-
 # Check if export was successful
-if [ $? -ne 0 ]; then
+if ! gpg --export-secret-keys --armor "$PRIMARY_KEY_ID" > "$EXPORTED_KEY_FILE"; then
   echo "GPG key export failed."
   exit 1
 fi
 
 # Export owner trust
 echo "Exporting owner trust..."
-gpg --export-ownertrust > "$OWNERTRUST_FILE"
-
 # Check if owner trust export was successful
-if [ $? -ne 0 ]; then
+if ! gpg --export-ownertrust > "$OWNERTRUST_FILE"; then
   echo "Owner trust export failed."
   exit 1
 fi
@@ -61,10 +57,8 @@ fi
 # Encrypt the exported key with age using password
 echo "Encrypting the exported key..."
 # echo "$PASSWORD" | age -e -o "$ENCRYPTED_FILE" "$EXPORTED_KEY_FILE"
-age -e -p -o "$ENCRYPTED_FILE" "$EXPORTED_KEY_FILE"
-
 # Check if encryption was successful
-if [ $? -ne 0 ]; then
+if ! age -e -p -o "$ENCRYPTED_FILE" "$EXPORTED_KEY_FILE"; then
   echo "Encryption failed."
   exit 1
 fi

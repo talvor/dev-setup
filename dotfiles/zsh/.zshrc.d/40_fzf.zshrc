@@ -7,7 +7,10 @@ if [ ! -d $HOME/.fzf-git ]; then
 fi
 
 # Set up fzf key bindings and fuzzy completion
-eval "$(fzf --zsh)"
+# (needs fzf 0.48 or newer; older packages such as apt on Pop!_OS lack --zsh)
+if fzf --zsh >/dev/null 2>&1; then
+  eval "$(fzf --zsh)"
+fi
 
 # --- setup fzf theme ---
 fg="#CBE0F0"

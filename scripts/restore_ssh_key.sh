@@ -31,13 +31,15 @@ fi
 # If only one file found, use it automatically
 if [ ${#AVAILABLE_FILES[@]} -eq 1 ]; then
   ENCRYPTED_FILE="vault/${AVAILABLE_FILES[0]}"
-  SSH_FILE=$(echo "${AVAILABLE_FILES[0]}" | sed 's/ssh_key_\(.*\)\.age/\1/')
+  SSH_FILE=${AVAILABLE_FILES[0]#ssh_key_}
+  SSH_FILE=${SSH_FILE%.age}
   echo "Found encrypted SSH key: $SSH_FILE"
 else
   # If multiple files found, let user choose
   echo "Multiple encrypted SSH key files found:"
   for i in "${!AVAILABLE_FILES[@]}"; do
-    KEY_TYPE=$(echo "${AVAILABLE_FILES[$i]}" | sed 's/ssh_key_\(.*\)\.age/\1/')
+    KEY_TYPE=${AVAILABLE_FILES[$i]#ssh_key_}
+    KEY_TYPE=${KEY_TYPE%.age}
     echo "  $((i+1)). $KEY_TYPE"
   done
   
@@ -51,7 +53,8 @@ else
   fi
   
   ENCRYPTED_FILE="vault/${AVAILABLE_FILES[$((choice-1))]}"
-  SSH_FILE=$(echo "${AVAILABLE_FILES[$((choice-1))]}" | sed 's/ssh_key_\(.*\)\.age/\1/')
+  SSH_FILE=${AVAILABLE_FILES[$((choice-1))]#ssh_key_}
+  SSH_FILE=${SSH_FILE%.age}
   echo "Selected SSH key: $SSH_FILE"
 fi
 
@@ -65,10 +68,8 @@ fi
 
 # Decrypt the SSH key
 echo "Decrypting the SSH key..."
-age -d "$ENCRYPTED_FILE" > "$SSH_DIR/$SSH_FILE"
-
 # Check if decryption was successful
-if [ $? -ne 0 ]; then
+if ! age -d "$ENCRYPTED_FILE" > "$SSH_DIR/$SSH_FILE"; then
   echo "Decryption failed."
   rm -f "$SSH_DIR/$SSH_FILE"
   if [ -f "$SSH_DIR/$SSH_BACKUP" ]; then

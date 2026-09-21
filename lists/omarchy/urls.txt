@@ -1,0 +1,5 @@
+# CLI Tools to Install from URLs on Omarchy
+# Added to the tools in lists/common/urls.txt.
+# Format: name|url|method
+# Methods: script, binary, archive
+# One tool per line, comments start with #

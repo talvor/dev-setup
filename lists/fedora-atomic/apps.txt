@@ -1,0 +1,48 @@
+# GUI Applications to install on Fedora Atomic (from Flathub)
+# One app per line, comments start with #
+# Added to the apps in lists/common/apps.txt.
+
+# Browsers
+org.chromium.Chromium
+
+# Development
+com.axosoft.GitKraken
+com.getpostman.Postman
+
+# Productivity
+md.obsidian.Obsidian
+
+# Media
+# vlc
+# spotify
+# plex
+# handbrake
+# imageoptim
+# gimp
+# blender
+
+# Utilities
+com.dropbox.Client
+
+# Security
+# gpg-suite
+# 1password
+# bitwarden
+# malwarebytes
+
+# System Tools
+# stats
+# coconutbattery
+# disk-utility
+# activity-monitor
+# console
+
+# Design
+# figma
+# sketch
+# adobe-creative-cloud
+
+# Communication
+# telegram
+# whatsapp
+# signal

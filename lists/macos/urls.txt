@@ -1,22 +1,11 @@
-# CLI Tools to Install from URLs
+# CLI Tools to Install from URLs on macOS
+# Added to the tools in lists/common/urls.txt.
 # Format: name|url|method
 # Methods: script, binary, archive
 # One tool per line, comments start with #
 
-## Example entries (uncomment and modify URLs as needed):
-# tool-name|https://example.com/install.sh|script
-# binary-tool|https://example.com/tool-binary|binary
-# archive-tool|https://example.com/tool.tar.gz|archive 
-# Popular CLI tools not available via Package Manager or requiring direct installation
-
-## Starship prompt (install script)
-# starship|https://starship.rs/install.sh|script
-
-## Rust toolchain (install script)
-# rustup|https://sh.rustup.rs|script
-
-## Node Version Manager (install script)
-#nvm|https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh|script
+## Oh My Zsh (install script)
+# oh-my-zsh|https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh|script
 
 ## GitHub CLI (if not using brew)
 # gh|https://github.com/cli/cli/releases/latest/download/gh_2.32.1_macOS_amd64.tar.gz|archive
@@ -41,5 +30,3 @@
 
 ## Consul (archive)
 # consul|https://releases.hashicorp.com/consul/1.16.0/consul_1.16.0_darwin_amd64.zip|archive
-
-

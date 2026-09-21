@@ -1,0 +1,26 @@
+# CLI Tools to Install from URLs (all operating systems)
+# Format: name|url|method
+# Methods: script, binary, archive
+# One tool per line, comments start with #
+#
+# Only add a tool here if the same URL works on every OS we support.
+# OS-specific URLs (or tools only wanted on some OS) go in lists/<os>/urls.txt.
+# The OS list is read after this one and only ever adds to it.
+
+## Example entries (uncomment and modify URLs as needed):
+# tool-name|https://example.com/install.sh|script
+# binary-tool|https://example.com/tool-binary|binary
+# archive-tool|https://example.com/tool.tar.gz|archive
+# Popular CLI tools not available via Package Manager or requiring direct installation
+
+## Starship prompt (install script)
+starship|https://starship.rs/install.sh|script
+
+## Claude code cli
+claude|https://claude.ai/install.sh|script
+
+## Rust toolchain (install script)
+# rustup|https://sh.rustup.rs|script
+
+## Node Version Manager (install script)
+#nvm|https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh|script

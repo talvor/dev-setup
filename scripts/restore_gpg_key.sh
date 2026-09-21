@@ -1,9 +1,8 @@
-
 #!/bin/bash
 
 echo "Restoring gpg key..."
 
-TEMP_DIR=`mktemp -d`
+TEMP_DIR=$(mktemp -d)
 
 # check if tmp dir was created
 if [[ ! "$TEMP_DIR" || ! -d "$TEMP_DIR" ]]; then
@@ -27,20 +26,16 @@ DECRYPTED_FILE="$TEMP_DIR/my_gpg_key.asc"
 
 # Decrypt the GPG key
 echo "Decrypting the GPG key..."
-age -d "$ENCRYPTED_FILE" > "$DECRYPTED_FILE"
-
 # Check if decryption was successful
-if [ $? -ne 0 ]; then
+if ! age -d "$ENCRYPTED_FILE" > "$DECRYPTED_FILE"; then
   echo "Decryption failed."
   exit 1
 fi
 
 # Import the GPG key
 echo "Importing the GPG key..."
-gpg --import-options=restore,keep-ownertrust --import "$DECRYPTED_FILE"
-
 # Check if import was successful
-if [ $? -ne 0 ]; then
+if ! gpg --import-options=restore,keep-ownertrust --import "$DECRYPTED_FILE"; then
   echo "GPG key import failed."
   exit 1
 fi

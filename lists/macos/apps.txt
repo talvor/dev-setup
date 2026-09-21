@@ -1,0 +1,77 @@
+# GUI Applications to install on macOS (Homebrew casks)
+# One cask per line, comments start with #
+# Added to the apps in lists/common/apps.txt.
+
+# Development
+alacritty
+# docker
+# gitkraken
+# ghostty
+# insomnia
+# postman
+# visual-studio-code
+# sublime-text
+# iterm2
+# github-desktop
+# sourcetree
+
+# Browsers
+# google-chrome
+# firefox
+# safari
+# brave-browser
+
+# Productivity
+# notion
+# obsidian
+# evernote
+# todoist
+# slack
+# discord
+# zoom
+
+# Media
+# vlc
+# spotify
+# plex
+# handbrake
+# imageoptim
+# gimp
+# blender
+
+# Utilities
+# dropbox
+# google-drive
+# alfred
+# raycast
+# bartender
+# cleanmymac
+# appcleaner
+# the-unarchiver
+# keka
+# dropzone
+# path-finder
+# finder-go
+
+# Security
+# gpg-suite
+# 1password
+# bitwarden
+# malwarebytes
+
+# System Tools
+# stats
+# coconutbattery
+# disk-utility
+# activity-monitor
+# console
+
+# Design
+# figma
+# sketch
+# adobe-creative-cloud
+
+# Communication
+# telegram
+# whatsapp
+# signal
