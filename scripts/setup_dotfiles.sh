@@ -3,8 +3,12 @@
 # Setup dotfiles using GNU Stow
 # See ./setup_dotfiles.sh --help for options (--dry-run, --os).
 #
-# Every package under dotfiles/ is stowed on every OS. The zsh package holds
-# one file per OS in ~/.zsh; ~/.zshrc sources the right one at shell start.
+# Stows the packages (directories under dotfiles/) listed in
+# lists/<os>/dotfiles.txt, one name per line. There is no common list: each OS
+# names every package it wants. A listed package without a dotfiles/<name>
+# directory is skipped with a warning; a missing list file is an error.
+# The zsh package holds one file per OS in ~/.zsh; ~/.zshrc sources the right
+# one at shell start.
 
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"
@@ -31,24 +35,31 @@ setup_dotfiles() {
     fi
   fi
 
-  log_info "Setting up dotfiles using GNU Stow..."
+  local list_file="$DEV_SETUP_ROOT/lists/$DEV_SETUP_OS/dotfiles.txt"
+  if [[ ! -f "$list_file" ]]; then
+    log_error "Dotfiles list not found: $list_file"
+    exit 1
+  fi
 
-  # Stow each subdirectory
-  local dir package_name
-  for dir in "$dotfiles_dir"/*/; do
-    if [[ -d "$dir" ]]; then
-      package_name=$(basename "$dir")
-      log_info "Stowing $package_name..."
+  log_info "Setting up dotfiles for $DEV_SETUP_OS using GNU Stow..."
 
-      if is_dry_run; then
-        log_dry "would run: stow -d $dotfiles_dir -t $HOME $package_name"
-      elif stow -d "$dotfiles_dir" -t "$HOME" "$package_name"; then
-        log_success "$package_name stowed successfully"
-      else
-        log_error "Failed to stow $package_name"
-      fi
+  # Stow each listed package
+  local package_name
+  while IFS= read -r package_name; do
+    if [[ ! -d "$dotfiles_dir/$package_name" ]]; then
+      log_warning "Skipping $package_name: $dotfiles_dir/$package_name not found"
+      continue
     fi
-  done
+    log_info "Stowing $package_name..."
+
+    if is_dry_run; then
+      log_dry "would run: stow -d $dotfiles_dir -t $HOME $package_name"
+    elif stow -d "$dotfiles_dir" -t "$HOME" "$package_name"; then
+      log_success "$package_name stowed successfully"
+    else
+      log_error "Failed to stow $package_name"
+    fi
+  done < <(list_file_entries "$list_file")
 
   log_success "Dotfiles setup completed"
   log_info "Your dotfiles are now symlinked from $dotfiles_dir to your home directory"

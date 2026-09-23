@@ -126,7 +126,8 @@ dev-setup/
 │   ├── common/               # Entries for every OS
 │   │   └── {tools,apps,fonts,urls}.txt
 │   └── <os id>/              # Entries added on top for one OS
-│       └── {tools,apps,fonts,urls}.txt
+│       ├── {tools,apps,fonts,urls}.txt
+│       └── dotfiles.txt      # Stow packages for this OS (no common file)
 ├── dotfiles/                 # Your dotfiles (managed by stow)
 └── README.md
 ```
@@ -147,7 +148,8 @@ Rules for the lists:
 - Put an entry in `common` only if its name is identical on every package
   manager we support. If it is named differently, or absent, on an OS, put it in
   that OS's list. There is no name translation between package managers.
-- Every `<os id>` needs all four files (they may just contain comments).
+- Every `<os id>` needs all four files (they may just contain comments), plus
+  `dotfiles.txt` (see [Dotfiles](#dotfiles)).
 - Blank lines and lines starting with `#` are ignored.
 
 What an entry means depends on the OS:
@@ -167,14 +169,24 @@ downloaded from the Nerd Fonts GitHub releases on every OS.
 1. Add the id to `SUPPORTED_OSES` and to `detect_os` in `lib/common.sh`.
 2. Create `os/<id>/backend.sh` implementing the functions documented in
    `os/popos/backend.sh`.
-3. Create `lists/<id>/{tools,apps,fonts,urls}.txt`.
+3. Create `lists/<id>/{tools,apps,fonts,urls,dotfiles}.txt`.
 4. Optionally add `os/<id>/prerequisites.sh` and `os/<id>/install_scripts/*.sh`.
 5. Add `dotfiles/zsh/.zsh/<id>.zshrc`.
 
 ## Dotfiles
 
-Each directory in `dotfiles/` is a Stow package and is stowed on every OS. Only
-the zsh package is split by OS:
+Each directory in `dotfiles/` is a Stow package. `lists/<os id>/dotfiles.txt`
+names the packages to stow on that OS, one per line (blank lines and `#`
+comments are ignored). Unlike the other lists there is no common file: each OS
+lists every package it wants, so a package can be left out on one OS (macOS
+skips `sway`, `waybar` and `rofi`).
+
+- A listed package with no `dotfiles/<name>` directory is skipped with a
+  warning; the other packages are still stowed.
+- If the OS has no `dotfiles.txt`, `setup_dotfiles.sh` stops with an error and
+  stows nothing.
+
+Only the zsh package is split by OS:
 
 - `.zshrc` and `.zshrc.d/*.zshrc` - common config, loaded on every OS
 - `.zsh/<os id>.zshrc` - one file per OS. All of them are stowed everywhere and
@@ -190,7 +202,9 @@ shell, as on the Fedora Atomic host).
 
 1. Create directories in `dotfiles/` for each application
 2. Place your config files inside, mirroring your home directory structure
-3. Run `./scripts/setup_dotfiles.sh` to symlink them
+3. Add the directory name to `lists/<os id>/dotfiles.txt` for each OS that
+   should get it
+4. Run `./scripts/setup_dotfiles.sh` to symlink them
 
 Example:
 ```

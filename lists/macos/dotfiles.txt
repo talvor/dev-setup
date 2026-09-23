@@ -1,0 +1,13 @@
+# Dotfiles packages to stow on macos
+# One package per line: the name of a directory under dotfiles/.
+# Only this file is read; there is no common dotfiles list.
+# sway, waybar and rofi are left out: they are Linux (Wayland) only.
+
+alacritty
+bash
+ghostty
+git
+nvim
+starship
+tmux
+zsh
