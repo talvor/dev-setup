@@ -10,4 +10,4 @@ alias code="flatpak run com.visualstudio.code"
 # Go is installed from the upstream tarball
 export PATH=$PATH:/usr/local/go/bin
 
-DEV_SETUP_TMUX_SESSION="workspace"
+unset DEV_SETUP_TMUX_SESSION

@@ -2,8 +2,6 @@
 # OS config (DEV_SETUP_TMUX_SESSION); without one nothing is started.
 session=$DEV_SETUP_TMUX_SESSION
 
-# source $HOME/.tmux.d/startup.sh
-
 if [[ -n "$session" ]] && [[ -z "$TMUX" ]] && [[ -t 0 ]] && [[ $- = *i* ]]; then
   # exec tmux attach-session -t $session || exec tmux new-session -s $session
   # Check if the session exists, discarding output

@@ -42,11 +42,11 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
-theme = catppuccin-frappe
+# theme = catppuccin-frappe
 background-opacity = 0.9
 background-blur = true
-# window-decoration = none
+window-decoration = none
 window-padding-x = 10
 window-padding-y = 10
 font-family =  "FiraCode Nerd Font Mono"
-font-size = 16
+font-size = 12
