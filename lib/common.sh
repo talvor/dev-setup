@@ -256,19 +256,25 @@ check_lists() {
   return "$ok"
 }
 
-# Print the entries of a list type: common first, then the OS-specific ones.
+# Print the entries of one list file (nothing if it does not exist).
 # Blank lines and comments are skipped and whitespace is trimmed.
+list_file_entries() {
+  local line
+  [[ -f "$1" ]] || return 0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    if [[ -z "$line" || "$line" == \#* ]]; then
+      continue
+    fi
+    printf '%s\n' "$line"
+  done <"$1"
+}
+
+# Print the entries of a list type: common first, then the OS-specific ones.
 list_entries() {
-  local file line
+  local file
   while IFS= read -r file; do
-    [[ -f "$file" ]] || continue
-    while IFS= read -r line || [[ -n "$line" ]]; do
-      line="${line#"${line%%[![:space:]]*}"}"
-      line="${line%"${line##*[![:space:]]}"}"
-      if [[ -z "$line" || "$line" == \#* ]]; then
-        continue
-      fi
-      printf '%s\n' "$line"
-    done <"$file"
+    list_file_entries "$file"
   done < <(list_files "$1")
 }

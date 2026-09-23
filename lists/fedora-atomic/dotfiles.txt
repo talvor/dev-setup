@@ -1,0 +1,15 @@
+# Dotfiles packages to stow on fedora-atomic
+# One package per line: the name of a directory under dotfiles/.
+# Only this file is read; there is no common dotfiles list.
+
+alacritty
+bash
+ghostty
+git
+nvim
+rofi
+starship
+sway
+tmux
+waybar
+zsh
