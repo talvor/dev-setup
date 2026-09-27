@@ -129,7 +129,10 @@ setup_home_manager() {
   # Build before touching $HOME, so a broken configuration leaves the Stow
   # links alone
   log_info "Building the Home Manager configuration for $DEV_SETUP_OS..."
-  nix build --no-link --impure "$DEV_SETUP_ROOT#homeConfigurations.$DEV_SETUP_OS.activationPackage"
+  if ! nix build --no-link --impure "$DEV_SETUP_ROOT#homeConfigurations.$DEV_SETUP_OS.activationPackage"; then
+    log_error "Building the Home Manager configuration failed; nothing was changed"
+    exit 1
+  fi
 
   remove_stow_links
 
