@@ -7,6 +7,8 @@ This file is the project's committed home for project-intrinsic agent knowledge:
 - Package-manager commands live in `os/<os>/backend.sh` (interface documented in `os/popos/backend.sh`); the `scripts/install_*.sh` are shared. Never copy a script per OS.
 - Every script supports `--dry-run` and `--os <id>`; use `run` from `lib/common.sh` for anything that changes the system. Keep scripts bash 3.2 compatible (macOS).
 - Lint: every `*.sh` must pass `bash -n` and `shellcheck` (see README "Development"). `shellcheck` may not be installed on the machine.
+- Pop!_OS is set up with Nix + Home Manager (README "Pop!_OS with Nix"): an OS with `os/<id>/home.nix` makes `setup.sh` run only prerequisites (root/apt), `scripts/setup_home_manager.sh` and `os/<id>/install_scripts/`; `lists/popos/` is legacy. Shared Nix settings live in `nix/common.nix`, kept in step with `lists/common/`. Moving another OS: README "Moving an OS to Nix".
+- Nix is not installed on the dev machine: validate with `nix flake check` inside a `nixos/nix` container (README "Development"). The flake only sees git-tracked files; real configs need `--impure` (USER, HOME, DEV_SETUP_ROOT), checks use a placeholder user.
 - zsh is the only dotfile package split by OS: `~/.zshrc` sources `~/.zsh/<os>.zshrc` first, then `~/.zshrc.d/*`. `omarchy` and `macos` backends/zsh files are untested until run on those systems.
 
 ## Maintaining this file

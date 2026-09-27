@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Dev Setup Script
-# Automated setup of an OS using its native package manager and Stow.
+# Automated setup of an OS using its native package manager and Stow, or, for
+# an OS with os/<id>/home.nix (popos), Nix and Home Manager.
 #
 # Usage: ./setup.sh [--dry-run] [--os <id>]
 #   --dry-run  print what would be done without changing the system
@@ -24,7 +25,42 @@ main() {
 
   local scripts="$DEV_SETUP_ROOT/scripts"
 
-  # Run setup steps
+  if uses_home_manager; then
+    setup_with_home_manager "$scripts"
+  else
+    setup_with_lists "$scripts"
+  fi
+
+  if is_dry_run; then
+    log_success "Dry run completed; nothing was changed."
+  else
+    log_success "Setup completed successfully!"
+    log_info "You may need to restart your terminal or source your shell configuration."
+  fi
+}
+
+# Nix and Home Manager install the tools, fonts, apps and dotfiles; only what
+# needs root, and what Nix cannot provide, stays outside.
+setup_with_home_manager() {
+  local scripts="$1"
+
+  log_info "Step 1: Running OS prerequisites (system packages)..."
+  bash "$scripts/run_os_steps.sh" prerequisites
+  log_newline
+
+  log_info "Step 2: Applying the Home Manager configuration..."
+  bash "$scripts/setup_home_manager.sh"
+  log_newline
+
+  log_info "Step 3: Running OS-specific install scripts..."
+  bash "$scripts/run_os_steps.sh" install
+  log_newline
+}
+
+# Package manager and Stow, driven by lists/
+setup_with_lists() {
+  local scripts="$1"
+
   log_info "Step 1: Running OS prerequisites..."
   bash "$scripts/run_os_steps.sh" prerequisites
   log_newline
@@ -52,13 +88,6 @@ main() {
   log_info "Step 7: Setting up dotfiles..."
   bash "$scripts/setup_dotfiles.sh"
   log_newline
-
-  if is_dry_run; then
-    log_success "Dry run completed; nothing was changed."
-  else
-    log_success "Setup completed successfully!"
-    log_info "You may need to restart your terminal or source your shell configuration."
-  fi
 }
 
 # Run main function

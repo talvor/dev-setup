@@ -1,4 +1,5 @@
 # GUI Applications to install (all operating systems)
+# OSes set up with Nix (popos) read nix/common.nix instead; keep both in step.
 # One app per line, comments start with #
 #
 # App ids are specific to the app source (Flathub ids, Homebrew casks, pacman

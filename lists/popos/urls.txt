@@ -1,4 +1,6 @@
 # CLI Tools to Install from URLs on Pop!_OS
+# Not used by setup.sh on Pop!_OS any more: it uses Nix and Home Manager
+# (os/popos/home.nix). Only the individual scripts/*.sh still read this list.
 # Added to the tools in lists/common/urls.txt.
 # Format: name|url|method
 # Methods: script, binary, archive
