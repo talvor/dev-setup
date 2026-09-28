@@ -17,6 +17,7 @@ Automated development setup. One branch, several operating systems.
 - ✅ Install CLI tools from URLs (for tools not available via package manager)
 - ✅ Setup dotfiles using GNU Stow, or Home Manager links on Pop!_OS
 - ✅ Setup SSH and GPG keys from encrypted vault (optional)
+- ✅ Back up and restore the firstmate home's private files in an encrypted vault (optional)
 - ✅ Dry-run mode that shows what would happen without changing anything
 
 ## Supported operating systems
@@ -221,7 +222,8 @@ dev-setup/
 │   ├── run_os_steps.sh       # Runs the per-OS extra steps
 │   ├── setup_dotfiles.sh
 │   ├── setup_home_manager.sh # Installs Nix, applies the Home Manager config
-│   └── {export,restore}_{ssh,gpg}_key.sh
+│   ├── {export,restore}_{ssh,gpg}_key.sh
+│   └── {export,restore}_firstmate.sh # Encrypted backup of the firstmate home's private files
 ├── os/                       # Everything that only applies to one OS
 │   └── <os id>/
 │       ├── backend.sh        # The package-manager commands for this OS
@@ -431,3 +433,33 @@ To restore keys exported from another machine, use the `restore_ssh_key.sh` or `
 These scripts use paths relative to the current directory (`vault/`), so run
 them from the repository root. They need `age`; on Pop!_OS Home Manager
 installs it (`nix/common.nix`).
+
+## Firstmate Backup (Optional)
+
+`export_firstmate.sh` backs up the private files of the firstmate home
+(`~/firstmate` by default) into one age-encrypted archive,
+`vault/firstmate.tar.age`: `data/captain.md`, `data/projects.md`,
+`data/learnings.md` (if it exists) and every file under `config/`. age asks for
+a passphrase; it is never passed on the command line. This is a one-way
+snapshot: firstmate keeps its files in its own home, so export again whenever
+you want a fresh backup.
+
+```bash
+# Back up ~/firstmate (or $FM_HOME, or --home <dir>)
+./scripts/export_firstmate.sh
+# See which files would be backed up
+./scripts/export_firstmate.sh --dry-run
+```
+
+`restore_firstmate.sh` decrypts the archive (age asks for the passphrase) and
+puts the files back into the firstmate home, keeping their file modes. Clone
+firstmate there first. An existing file that differs is kept as `<file>.bak`
+(or `<file>.bak.<timestamp>`) before it is replaced; identical files are left
+alone. `--dry-run` shows what would change.
+
+```bash
+./scripts/restore_firstmate.sh
+```
+
+`setup.sh` never runs the restore: run it by hand, from the repository root,
+when you want the files back. Like the key scripts, both need `age`.
