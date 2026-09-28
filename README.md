@@ -225,10 +225,11 @@ Manager links, so the switch simply replaces them (no `.hm-backup`). Stow
 also folds a directory it created into one directory link (for example
 `~/.zshrc.d` or `~/.config/nvim`), and those make the first switch fail with
 "would be clobbered". So on a machine still set up with Stow, remove the Stow
-links by hand before the first switch, from the checkout:
+links of every package under `dotfiles/` by hand before the first switch,
+from the checkout:
 
 ```bash
-stow -D -d "$PWD/dotfiles" -t "$HOME" alacritty bash ghostty git gnupg nvim rofi starship sway tmux waybar zsh
+(cd dotfiles && stow -D -t "$HOME" */)
 ```
 
 Only do this before the first switch: once Home Manager is applied, `stow -D`

@@ -78,6 +78,16 @@ home_manager() {
   nix run "$DEV_SETUP_ROOT#home-manager" -- "$@"
 }
 
+# Stow's folded directory links (e.g. ~/.zshrc.d) make a switch fail with
+# "would be clobbered"; point at the stow -D that removes them
+log_stow_hint() {
+  local dir pkgs=""
+  for dir in "$DEV_SETUP_ROOT"/dotfiles/*/; do
+    pkgs+=" $(basename "$dir")"
+  done
+  log_error "If it names files that would be clobbered, they are likely Stow directory links; remove the Stow links first: stow -D -d \"$DEV_SETUP_ROOT/dotfiles\" -t \"$HOME\"$pkgs (README \"Pop!_OS with Nix\")"
+}
+
 setup_home_manager() {
   if ! uses_home_manager; then
     log_error "$DEV_SETUP_OS is not set up with Home Manager (no os/$DEV_SETUP_OS/home.nix)"
@@ -91,6 +101,7 @@ setup_home_manager() {
       log_info "Previewing the Home Manager switch (builds into /nix/store, changes none of your files)."
       if ! home_manager switch --dry-run --impure --flake "$FLAKE" -b "$HM_BACKUP_EXT"; then
         log_error "The Home Manager preview failed"
+        log_stow_hint
         exit 1
       fi
     else
@@ -108,7 +119,8 @@ setup_home_manager() {
 
   log_info "Applying the Home Manager configuration (files in the way are renamed to *.$HM_BACKUP_EXT)..."
   if ! home_manager switch --impure --flake "$FLAKE" -b "$HM_BACKUP_EXT"; then
-    log_error "Home Manager switch failed. If it names files that would be clobbered, they are likely Stow directory links; remove the Stow links first: stow -D -d \"$DEV_SETUP_ROOT/dotfiles\" -t \"$HOME\" alacritty bash ghostty git gnupg nvim rofi starship sway tmux waybar zsh (README \"Pop!_OS with Nix\")"
+    log_error "Home Manager switch failed"
+    log_stow_hint
     exit 1
   fi
   log_success "Home Manager configuration applied"
