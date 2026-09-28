@@ -10,9 +10,13 @@
   };
 
   home.packages = with pkgs; [
-    # Formerly installed from URLs. herdr is not in nixpkgs: it keeps its own
-    # installer (see README "Pop!_OS with Nix").
+    # Formerly installed from URLs
     lazydocker
+    herdr
+
+    # Formerly installed with apt by ./prerequisites.sh
+    wget
+    unzip
   ];
 
   # GUI apps stay Flatpaks: Nix GUI apps lack the host graphics drivers on a
@@ -50,6 +54,7 @@
     "bash"
     "ghostty"
     "git"
+    "gnupg"
     "nvim"
     "rofi"
     "starship"

@@ -8,6 +8,7 @@ alacritty
 bash
 ghostty
 git
+gnupg
 nvim
 rofi
 starship

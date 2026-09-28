@@ -52,6 +52,12 @@ setup_dotfiles() {
     fi
     log_info "Stowing $package_name..."
 
+    # Stow would link a missing ~/.gnupg to the checkout; gpg wants a private
+    # (700) directory of its own
+    if [[ -d "$dotfiles_dir/$package_name/.gnupg" && ! -e "$HOME/.gnupg" ]]; then
+      run mkdir -m 700 "$HOME/.gnupg"
+    fi
+
     if is_dry_run; then
       log_dry "would run: stow -d $dotfiles_dir -t $HOME $package_name"
     elif stow -d "$dotfiles_dir" -t "$HOME" "$package_name"; then
