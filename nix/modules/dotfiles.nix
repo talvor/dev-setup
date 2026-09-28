@@ -12,9 +12,14 @@ let
   # than the directory itself (Stow does the same once they exist).
   sharedDirs = [
     ".config"
+    ".gnupg"
     ".local"
     ".local/share"
   ];
+
+  # Shared directories that must stay private: gpg warns about ~/.gnupg unless
+  # it is 700, and Home Manager would create it 755.
+  privateDirs = lib.filter (dir: lib.any (path: lib.hasPrefix "${dir}/" path) paths) [ ".gnupg" ];
 
   # Paths (relative to $HOME) to link for one package
   entries =
@@ -59,6 +64,15 @@ in
           source = config.lib.file.mkOutOfStoreSymlink "${cfg.root}/dotfiles/${link.pkg}/${link.path}";
         }
       ) links
+    );
+
+    home.activation.devSetupPrivateDirs = lib.mkIf (privateDirs != [ ]) (
+      lib.hm.dag.entryBetween [ "linkGeneration" ] [ "writeBoundary" ] (
+        lib.concatMapStrings (dir: ''
+          run mkdir -p $VERBOSE_ARG ${lib.escapeShellArg "${config.home.homeDirectory}/${dir}"}
+          run chmod 700 ${lib.escapeShellArg "${config.home.homeDirectory}/${dir}"}
+        '') privateDirs
+      )
     );
 
     warnings = map (

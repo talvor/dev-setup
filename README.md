@@ -123,14 +123,22 @@ On Pop!_OS, `./setup.sh` runs three steps:
    flakes), `flatpak` (host integration for the apps), `fontconfig`, `zsh`
    (login shell, must be in `/etc/shells`), `alacritty` and `claude-desktop`
    (GUI apps that are not on Flathub; Nix GUI apps lack the host graphics
-   drivers), `stow` (to remove the old Stow links), plus the build and download
-   tools the old path installed.
+   drivers), `stow` (to remove the old Stow links) and `build-essential` (the
+   host C toolchain).
 2. **Nix and Home Manager** (`scripts/setup_home_manager.sh`): installs Nix if
    it is missing, removes the Stow links into `dotfiles/`, and applies
    `homeConfigurations.popos` from `flake.nix`.
 3. **OS install scripts** (`os/popos/install_scripts/`): tools that are not in
-   nixpkgs. Today that is `herdr`, installed with its own installer into
-   `~/.local/bin` (it updates itself).
+   nixpkgs. There are none today; the step is skipped when the directory is
+   missing.
+
+The flake follows `nixos-unstable` (with Home Manager `master`), so newer tools
+such as `herdr` come straight from nixpkgs; `flake.lock` pins the exact
+revision. Run `nix flake update` to move to a newer unstable revision.
+Existing installs should delete the `herdr` left in `~/.local/bin` by its old
+installer (`rm ~/.local/bin/herdr`): `~/.local/bin` comes first on the `PATH`,
+so it shadows the Nix `herdr`. `scripts/setup_home_manager.sh` warns while it
+is there, but does not delete it.
 
 Nix is installed with the official multi-user installer
 (`https://nixos.org/nix/install --daemon`): it is upstream Nix, sets up
@@ -157,8 +165,9 @@ What goes where:
   by the old path.
 - **Dotfiles**: `devSetup.dotfiles` lists the packages under `dotfiles/`, as
   `lists/popos/dotfiles.txt` did. Each package's top-level entries are linked
-  into `$HOME` (entries of `.config` and `.local` one level down, as Stow does
-  when those exist) and the links point into this checkout, so the files stay
+  into `$HOME` (entries of `.config`, `.gnupg` and `.local` one level down, as
+  Stow does when those exist; `~/.gnupg` is created private, 700, as gpg
+  requires) and the links point into this checkout, so the files stay
   editable in place. The whole `~/.zsh` directory is linked, so `~/.zshrc` still
   sources `~/.zsh/popos.zshrc`, which in turn loads the Nix and Home Manager
   session. Nix only sees files tracked by git: `git add` a new package before
@@ -218,7 +227,7 @@ dev-setup/
 │       ├── backend.sh        # The package-manager commands for this OS
 │       ├── home.nix          # Home Manager config; makes setup.sh use Nix (popos)
 │       ├── prerequisites.sh  # Optional step, runs before anything is installed (popos)
-│       └── install_scripts/  # Optional steps, run after the lists (fedora-atomic: autotiling, popos: herdr)
+│       └── install_scripts/  # Optional steps, run after the lists (fedora-atomic: autotiling)
 ├── lists/
 │   ├── common/               # Entries for every OS
 │   │   └── {tools,apps,fonts,urls}.txt

@@ -21,14 +21,13 @@ install_prerequisites() {
   #                graphics drivers)
   #   stow       - removes the old Stow links before Home Manager takes over,
   #                and the fallback scripts/setup_dotfiles.sh
-  #   build-essential, wget, unzip - general build and download tools
+  #   build-essential - the host C toolchain, for building against system
+  #                libraries
   local packages=(
     build-essential
     ca-certificates
     curl
-    wget
     git
-    unzip
     xz-utils
     stow
     fontconfig

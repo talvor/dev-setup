@@ -142,6 +142,10 @@ setup_home_manager() {
     exit 1
   fi
   log_success "Home Manager configuration applied"
+
+  if [[ -e "$HOME/.local/bin/herdr" ]]; then
+    log_warning "$HOME/.local/bin/herdr (from the old herdr installer) comes before the Nix herdr on the PATH. Remove it with: rm ~/.local/bin/herdr"
+  fi
 }
 
 setup_home_manager
