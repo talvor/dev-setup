@@ -9,6 +9,41 @@ Automated development setup. One branch, several operating systems.
 - The **other systems** use their native package manager, the lists in `lists/`
   and GNU Stow for the dotfiles, until they are migrated too.
 
+## Quick start
+
+On a fresh machine, clone the repository and see the next steps with:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/talvor/dev-setup/main/install.sh | bash
+# or
+bash <(curl -fsSL https://raw.githubusercontent.com/talvor/dev-setup/main/install.sh)
+```
+
+`install.sh` clones over HTTPS into `~/Development/dev-setup` and prints the
+next steps for the detected OS: preview with `./setup.sh --dry-run`, run
+`./setup.sh`, then the optional restore of the SSH/GPG keys (and, on Pop!_OS,
+the firstmate files) from the `vault/` folder copied from the old machine. It
+never runs `setup.sh` itself. If git is missing it says how to install it.
+
+Choose another location with `DEV_SETUP_DIR=<path>` or an argument
+(`curl ... | bash -s -- --dir <path>`). An existing dev-setup clone there is
+kept and only fast-forwarded when it has no local changes; anything else at the
+target stops the script. Nothing is deleted or overwritten. Like the other
+scripts it takes `--dry-run` and `--os <id>` (see `install.sh --help`).
+
+Or clone by hand:
+
+```bash
+git clone https://github.com/talvor/dev-setup.git
+cd dev-setup
+
+# See what would be done, without changing anything
+./setup.sh --dry-run
+
+# Run the complete setup
+./setup.sh
+```
+
 ## Features
 
 - ✅ Install command line tools
@@ -50,20 +85,6 @@ DEV_SETUP_OS=popos ./setup.sh
 - Internet connection
 - On macOS, [Homebrew](https://brew.sh)
 - On Pop!_OS nothing else: `setup.sh` installs Nix if it is missing
-
-## Quick Start
-
-```bash
-# Clone this repository
-git clone https://github.com/talvor/dev-setup.git
-cd dev-setup
-
-# See what would be done, without changing anything
-./setup.sh --dry-run
-
-# Run the complete setup
-./setup.sh
-```
 
 ## Dry run
 
@@ -210,6 +231,7 @@ the individual scripts until the Nix path has been used on a real machine.
 
 ```
 dev-setup/
+├── install.sh                # Bootstrap: clone from GitHub, print next steps
 ├── setup.sh                  # Main setup script
 ├── flake.nix, flake.lock     # Home Manager configurations (Nix OSes: popos)
 ├── nix/
@@ -396,7 +418,7 @@ Every shell script must pass `bash -n` and [shellcheck](https://www.shellcheck.n
 bash 3.2 because macOS ships it.
 
 ```bash
-files=(setup.sh lib/*.sh scripts/*.sh os/*/*.sh os/*/install_scripts/*.sh)
+files=(install.sh setup.sh lib/*.sh scripts/*.sh os/*/*.sh os/*/install_scripts/*.sh)
 for f in "${files[@]}"; do bash -n "$f"; done
 shellcheck "${files[@]}"
 ```
