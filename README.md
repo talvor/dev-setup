@@ -1,7 +1,13 @@
 # dev-setup
 
-Automated development setup using the native package manager of each OS and
-dotfiles management with GNU Stow. One branch, several operating systems.
+Automated development setup. One branch, several operating systems.
+
+- **Pop!_OS** is set up with [Nix](https://nixos.org) and
+  [Home Manager](https://github.com/nix-community/home-manager): CLI tools, fonts,
+  Flatpak apps and dotfile links are declared in Nix (see
+  [Pop!_OS with Nix](#popos-with-nix)).
+- The **other systems** use their native package manager, the lists in `lists/`
+  and GNU Stow for the dotfiles, until they are migrated too.
 
 ## Features
 
@@ -9,7 +15,7 @@ dotfiles management with GNU Stow. One branch, several operating systems.
 - ✅ Install GUI applications
 - ✅ Install fonts
 - ✅ Install CLI tools from URLs (for tools not available via package manager)
-- ✅ Setup dotfiles using GNU Stow
+- ✅ Setup dotfiles using GNU Stow, or Home Manager links on Pop!_OS
 - ✅ Setup SSH and GPG keys from encrypted vault (optional)
 - ✅ Dry-run mode that shows what would happen without changing anything
 
@@ -17,7 +23,7 @@ dotfiles management with GNU Stow. One branch, several operating systems.
 
 | OS id           | System                                   | Tools        | GUI apps       | Status |
 | --------------- | ---------------------------------------- | ------------ | -------------- | ------ |
-| `popos`         | Pop!_OS                                  | `apt`        | Flatpak        | verified with a dry run |
+| `popos`         | Pop!_OS                                  | Nix + Home Manager (root-level bits: `apt`) | Flatpak, declared with nix-flatpak | Nix config built and activated in a container; not yet applied on a real machine |
 | `fedora-atomic` | Fedora Atomic (Silverblue, Kinoite, ...) | `rpm-ostree` | Flatpak        | **unverified** |
 | `macos`         | macOS                                    | Homebrew     | Homebrew casks | **unverified** |
 | `omarchy`       | Omarchy (Arch Linux)                     | `pacman`     | `pacman`       | **unverified, untested backend** |
@@ -42,6 +48,7 @@ DEV_SETUP_OS=popos ./setup.sh
 - `sudo` privileges (Linux)
 - Internet connection
 - On macOS, [Homebrew](https://brew.sh)
+- On Pop!_OS nothing else: `setup.sh` installs Nix if it is missing
 
 ## Quick Start
 
@@ -74,6 +81,9 @@ you what is missing. You can preview another OS on any machine with
 ## Manual Steps
 
 You can also run individual setup steps. They all take `--dry-run` and `--os`.
+On Pop!_OS `setup.sh` runs only the prerequisites, `setup_home_manager.sh` and
+the OS install scripts (see [Pop!_OS with Nix](#popos-with-nix)); the other
+steps below still work there on their own, reading `lists/popos/`.
 
 ```bash
 # OS specific prerequisites (only some OSes have any, e.g. popos)
@@ -96,16 +106,101 @@ You can also run individual setup steps. They all take `--dry-run` and `--os`.
 
 # Setup dotfiles
 ./scripts/setup_dotfiles.sh
+
+# Install Nix and apply the Home Manager configuration (popos only)
+./scripts/setup_home_manager.sh
 ```
 
 `setup.sh` runs them in this order: prerequisites, tools, apps, fonts, URLs,
 OS install scripts, dotfiles.
+
+## Pop!_OS with Nix
+
+On Pop!_OS, `./setup.sh` runs three steps:
+
+1. **Prerequisites** (`os/popos/prerequisites.sh`, `sudo apt`): only what needs
+   root or cannot come from Nix: `curl`, `git`, `xz-utils` (Nix installer and
+   flakes), `flatpak` (host integration for the apps), `fontconfig`, `zsh`
+   (login shell, must be in `/etc/shells`), `alacritty` and `claude-desktop`
+   (GUI apps that are not on Flathub; Nix GUI apps lack the host graphics
+   drivers), `stow` (to remove the old Stow links), plus the build and download
+   tools the old path installed.
+2. **Nix and Home Manager** (`scripts/setup_home_manager.sh`): installs Nix if
+   it is missing, removes the Stow links into `dotfiles/`, and applies
+   `homeConfigurations.popos` from `flake.nix`.
+3. **OS install scripts** (`os/popos/install_scripts/`): tools that are not in
+   nixpkgs. Today that is `herdr`, installed with its own installer into
+   `~/.local/bin` (it updates itself).
+
+Nix is installed with the official multi-user installer
+(`https://nixos.org/nix/install --daemon`): it is upstream Nix, sets up
+`/etc/zsh/zshrc` and `/etc/profile.d` so Nix is on the `PATH`, and takes
+`--nix-extra-conf-file`, which the script uses to enable flakes
+(`experimental-features = nix-command flakes` in `/etc/nix/nix.conf`). The
+scripts also enable flakes for their own calls, so an existing Nix without
+them works too.
+
+What goes where:
+
+| What | Declared in |
+| ---- | ----------- |
+| CLI tools, fonts shared by every Nix OS | `nix/common.nix` (mirrors `lists/common/`) |
+| Pop!_OS tools, Flatpak apps, dotfile packages | `os/popos/home.nix` |
+| apt packages (root) | `os/popos/prerequisites.sh` |
+| Tools not in nixpkgs | `os/popos/install_scripts/*.sh` |
+
+- **Flatpak apps** are declared with
+  [nix-flatpak](https://github.com/gmodena/nix-flatpak) (`services.flatpak`),
+  from the same `flathub` remote. They are installed per user (`flatpak
+  --user`) by a systemd user service that starts on switch and at login. Apps
+  that are not declared are left alone, including ones installed system-wide
+  by the old path.
+- **Dotfiles**: `devSetup.dotfiles` lists the packages under `dotfiles/`, as
+  `lists/popos/dotfiles.txt` did. Each package's top-level entries are linked
+  into `$HOME` (entries of `.config` and `.local` one level down, as Stow does
+  when those exist) and the links point into this checkout, so the files stay
+  editable in place. The whole `~/.zsh` directory is linked, so `~/.zshrc` still
+  sources `~/.zsh/popos.zshrc`, which in turn loads the Nix and Home Manager
+  session. Nix only sees files tracked by git: `git add` a new package before
+  applying.
+- Files already in the way of a link (such as the stock `~/.bashrc`) are
+  renamed to `<file>.hm-backup`.
+- **Fonts** come from nixpkgs (`nerd-fonts.*`) with fontconfig enabled. Host
+  apps (the terminals) see them; Flatpak apps do not, as the sandbox has no
+  `/nix/store`.
+
+After changing a `.nix` file, apply it again with
+`./scripts/setup_home_manager.sh` (quick when Nix is installed). It exports
+`DEV_SETUP_ROOT` and passes `--impure`: the configuration reads `USER`, `HOME`
+and `DEV_SETUP_ROOT` from the environment, so it is not tied to one user or
+checkout path. By hand that is:
+
+```bash
+DEV_SETUP_ROOT=$PWD nix run .#home-manager -- switch --impure --flake .#popos -b hm-backup
+```
+
+In a dry run nothing is installed. If Nix is already installed, the dry run
+also previews the switch with `home-manager switch --dry-run`, which builds
+into `/nix/store` and lists every link it would make, file it would back up and
+package it would install. It changes none of your files; only Nix and Home
+Manager bookkeeping (`~/.cache/nix`, `~/.local/share/home-manager`) may appear.
+
+If the switch fails after the Stow links were removed,
+`./scripts/setup_dotfiles.sh` puts them back.
+
+The files under `lists/popos/` are no longer read by `setup.sh`; they stay for
+the individual scripts until the Nix path has been used on a real machine.
 
 ## Structure
 
 ```
 dev-setup/
 ├── setup.sh                  # Main setup script
+├── flake.nix, flake.lock     # Home Manager configurations (Nix OSes: popos)
+├── nix/
+│   ├── mk-home.nix           # Builds one OS's configuration
+│   ├── common.nix            # Shared by every Nix OS (tools, fonts)
+│   └── modules/              # dotfiles.nix (dotfile links), flatpak.nix (dry-run fix)
 ├── lib/
 │   ├── common.sh             # Logging, dry run, OS detection, list reading
 │   └── flatpak.sh            # Flatpak helpers shared by fedora-atomic and popos
@@ -116,12 +211,14 @@ dev-setup/
 │   ├── install_from_urls.sh
 │   ├── run_os_steps.sh       # Runs the per-OS extra steps
 │   ├── setup_dotfiles.sh
+│   ├── setup_home_manager.sh # Installs Nix, applies the Home Manager config
 │   └── {export,restore}_{ssh,gpg}_key.sh
 ├── os/                       # Everything that only applies to one OS
 │   └── <os id>/
 │       ├── backend.sh        # The package-manager commands for this OS
+│       ├── home.nix          # Home Manager config; makes setup.sh use Nix (popos)
 │       ├── prerequisites.sh  # Optional step, runs before anything is installed (popos)
-│       └── install_scripts/  # Optional steps, run after the lists (fedora-atomic: autotiling)
+│       └── install_scripts/  # Optional steps, run after the lists (fedora-atomic: autotiling, popos: herdr)
 ├── lists/
 │   ├── common/               # Entries for every OS
 │   │   └── {tools,apps,fonts,urls}.txt
@@ -173,6 +270,20 @@ downloaded from the Nerd Fonts GitHub releases on every OS.
 4. Optionally add `os/<id>/prerequisites.sh` and `os/<id>/install_scripts/*.sh`.
 5. Add `dotfiles/zsh/.zsh/<id>.zshrc`.
 
+### Moving an OS to Nix
+
+Follow Pop!_OS:
+
+1. Add `os/<id>/home.nix` with what only that OS gets (tools, apps, the
+   `devSetup.dotfiles` packages). Its presence makes `setup.sh` take the Nix
+   path for the OS.
+2. Add the id and the systems to check to `oses` in `flake.nix`.
+3. Keep root-level work in `os/<id>/prerequisites.sh`, and tools that nixpkgs
+   lacks in `os/<id>/install_scripts/`.
+4. Shared settings belong in `nix/common.nix`; keep it in step with
+   `lists/common/`. On macOS that likely means nix-darwin or Homebrew for GUI
+   apps instead of Flatpak.
+
 ## Dotfiles
 
 Each directory in `dotfiles/` is a Stow package. `lists/<os id>/dotfiles.txt`
@@ -180,6 +291,10 @@ names the packages to stow on that OS, one per line (blank lines and `#`
 comments are ignored). Unlike the other lists there is no common file: each OS
 lists every package it wants, so a package can be left out on one OS (macOS
 skips `sway`, `waybar` and `rofi`).
+
+On Pop!_OS Home Manager links the packages instead of Stow; they are listed in
+`devSetup.dotfiles` in `os/popos/home.nix` (see
+[Pop!_OS with Nix](#popos-with-nix)).
 
 - A listed package with no `dotfiles/<name>` directory is skipped with a
   warning; the other packages are still stowed.
@@ -270,6 +385,16 @@ for f in "${files[@]}"; do bash -n "$f"; done
 shellcheck "${files[@]}"
 ```
 
+`nix flake check` evaluates and builds every Home Manager configuration for a
+placeholder user (`checks.<system>.<os>`), so it needs neither `--impure` nor
+a real home directory. Without Nix on the machine, run it in a container:
+
+```bash
+docker run --rm -v "$PWD":/src:ro nixos/nix sh -c '
+  cp -r /src /work && cd /work && git config --global --add safe.directory "*" &&
+  nix --extra-experimental-features "nix-command flakes" flake check -L'
+```
+
 ## SSH and GPG Keys Setup (Optional)
 
 ### Exporting SSH and GPG Keys
@@ -295,4 +420,5 @@ To restore keys exported from another machine, use the `restore_ssh_key.sh` or `
 ```
 
 These scripts use paths relative to the current directory (`vault/`), so run
-them from the repository root.
+them from the repository root. They need `age`; on Pop!_OS Home Manager
+installs it (`nix/common.nix`).

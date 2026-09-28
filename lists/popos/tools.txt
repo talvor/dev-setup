@@ -1,4 +1,6 @@
 # Command Line Tools to Install on Pop!_OS (apt)
+# Not used by setup.sh on Pop!_OS any more: it uses Nix and Home Manager
+# (os/popos/home.nix). Only the individual scripts/*.sh still read this list.
 # One tool per line, comments start with #
 # Added to the tools in lists/common/tools.txt.
 #

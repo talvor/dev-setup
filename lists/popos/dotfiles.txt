@@ -1,4 +1,6 @@
 # Dotfiles packages to stow on popos
+# Not used by setup.sh on Pop!_OS any more: it uses Nix and Home Manager
+# (os/popos/home.nix). Only the individual scripts/*.sh still read this list.
 # One package per line: the name of a directory under dotfiles/.
 # Only this file is read; there is no common dotfiles list.
 

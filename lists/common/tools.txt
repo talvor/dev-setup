@@ -1,4 +1,5 @@
 # Command Line Tools to Install (all operating systems)
+# OSes set up with Nix (popos) read nix/common.nix instead; keep both in step.
 # One tool per line, comments start with #
 #
 # Only add a tool here if its package name is identical in every package

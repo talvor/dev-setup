@@ -1,4 +1,5 @@
 # CLI Tools to Install from URLs (all operating systems)
+# OSes set up with Nix (popos) read nix/common.nix instead; keep both in step.
 # Format: name|url|method
 # Methods: script, binary, archive
 # One tool per line, comments start with #

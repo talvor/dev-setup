@@ -1,4 +1,6 @@
 # GUI Applications to install on Pop!_OS (from Flathub)
+# Not used by setup.sh on Pop!_OS any more: it uses Nix and Home Manager
+# (os/popos/home.nix). Only the individual scripts/*.sh still read this list.
 # One app per line, comments start with #
 # Added to the apps in lists/common/apps.txt.
 

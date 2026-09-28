@@ -1,4 +1,6 @@
 # NerdFonts to install on Pop!_OS
+# Not used by setup.sh on Pop!_OS any more: it uses Nix and Home Manager
+# (os/popos/home.nix). Only the individual scripts/*.sh still read this list.
 # Added to the fonts in lists/common/fonts.txt.
 #
 # Format: name|family (family is optional)

@@ -220,6 +220,12 @@ init_script() {
   export DEV_SETUP_BANNER_SHOWN=1
 }
 
+# Succeed if the current OS is set up with Nix and Home Manager
+# (os/<id>/home.nix, see flake.nix) instead of the list scripts.
+uses_home_manager() {
+  [[ -f "$DEV_SETUP_ROOT/os/$DEV_SETUP_OS/home.nix" ]]
+}
+
 # Make sure the package manager exists (only a warning in dry-run mode, so
 # another OS can be previewed with --os on a machine that lacks its tools).
 require_command() {

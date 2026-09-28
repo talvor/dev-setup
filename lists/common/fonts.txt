@@ -1,5 +1,6 @@
 
 # NerdFonts to install (all operating systems)
+# OSes set up with Nix (popos) read nix/common.nix instead; keep both in step.
 #
 # Fonts are downloaded from the Nerd Fonts GitHub releases on every OS.
 # The OS list (lists/<os>/fonts.txt) is read after this one and only adds to it.
