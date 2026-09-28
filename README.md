@@ -458,9 +458,9 @@ you want a fresh backup.
 
 `restore_firstmate.sh` decrypts the archive (age asks for the passphrase) and
 puts the files back into the firstmate home, keeping their file modes. Clone
-firstmate there first (on Pop!_OS `setup.sh` does that). An existing file that differs is kept as `<file>.bak`
-(or `<file>.bak.<timestamp>`) before it is replaced; identical files are left
-alone. `--dry-run` shows what would change.
+firstmate there first (on Pop!_OS `setup.sh` does that). An existing file that differs is first moved, with its
+mode, into `data/.restore-backup-<timestamp>/<path>` in the firstmate home
+(the export never archives it); identical files are left alone. `--dry-run` shows what would change.
 
 ```bash
 ./scripts/restore_firstmate.sh

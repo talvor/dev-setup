@@ -4,7 +4,7 @@
 # vault/firstmate.tar.age into the firstmate home. age asks for the passphrase.
 #
 # Run it by hand; setup.sh does not call it. An existing file that differs is
-# kept as <file>.bak (or <file>.bak.<timestamp> if that exists) before it is
+# moved into <home>/data/.restore-backup-<timestamp>/<path> before it is
 # replaced. File modes are preserved.
 
 set -o pipefail
@@ -112,6 +112,8 @@ while IFS= read -r rel; do
   esac
 done <"$FILE_LIST"
 
+BACKUP_DIR="$FM_HOME_DIR/data/.restore-backup-$(date +%Y%m%d%H%M%S)"
+BACKED_UP=0
 RESTORED=0
 SKIPPED=0
 while IFS= read -r rel; do
@@ -125,17 +127,15 @@ while IFS= read -r rel; do
   fi
 
   if [[ -e "$target" || -L "$target" ]]; then
-    backup="$target.bak"
-    if [[ -e "$backup" || -L "$backup" ]]; then
-      backup="$target.bak.$(date +%Y%m%d%H%M%S)"
-    fi
+    backup="$BACKUP_DIR/$rel"
     if [[ "$DRY_RUN" == "1" ]]; then
       echo "  would replace: $rel (keeping the old one as ${backup#"$FM_HOME_DIR"/})"
     else
-      if ! mv "$target" "$backup"; then
+      if ! mkdir -p "$(dirname "$backup")" || ! mv "$target" "$backup"; then
         echo "Could not back up $target"
         exit 1
       fi
+      BACKED_UP=$((BACKED_UP + 1))
       echo "  backed up: $rel -> ${backup#"$FM_HOME_DIR"/}"
     fi
   elif [[ "$DRY_RUN" == "1" ]]; then
@@ -156,4 +156,7 @@ if [[ "$DRY_RUN" == "1" ]]; then
   echo "Dry run: $RESTORED file(s) would be restored, $SKIPPED unchanged."
 else
   echo "Firstmate files restored successfully: $RESTORED restored, $SKIPPED unchanged."
+  if [[ "$BACKED_UP" -gt 0 ]]; then
+    echo "Replaced files were moved to $BACKUP_DIR"
+  fi
 fi
