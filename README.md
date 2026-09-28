@@ -17,6 +17,7 @@ Automated development setup. One branch, several operating systems.
 - ✅ Install CLI tools from URLs (for tools not available via package manager)
 - ✅ Setup dotfiles using GNU Stow, or Home Manager links on Pop!_OS
 - ✅ Setup SSH and GPG keys from encrypted vault (optional)
+- ✅ Back up and restore the firstmate home's private files in an encrypted vault (optional)
 - ✅ Dry-run mode that shows what would happen without changing anything
 
 ## Supported operating systems
@@ -128,9 +129,14 @@ On Pop!_OS, `./setup.sh` runs three steps:
 2. **Nix and Home Manager** (`scripts/setup_home_manager.sh`): installs Nix if
    it is missing, removes the Stow links into `dotfiles/`, and applies
    `homeConfigurations.popos` from `flake.nix`.
-3. **OS install scripts** (`os/popos/install_scripts/`): tools that are not in
-   nixpkgs. There are none today; the step is skipped when the directory is
-   missing.
+3. **OS install scripts** (`os/popos/install_scripts/`): what Nix does not
+   set up. `firstmate.sh` clones
+   [firstmate](https://github.com/kunchenguid/firstmate) into `~/firstmate`
+   unless that exists, creates `~/Development` and links
+   `~/firstmate/projects` to it. An existing `~/firstmate/projects` that is
+   anything else (a directory, or a link elsewhere) is left alone with a
+   warning. Restoring firstmate's private files is not part of setup (see
+   [Firstmate Backup](#firstmate-backup-optional)).
 
 The flake follows `nixos-unstable` (with Home Manager `master`), so newer tools
 such as `herdr` come straight from nixpkgs; `flake.lock` pins the exact
@@ -155,7 +161,7 @@ What goes where:
 | CLI tools, fonts shared by every Nix OS | `nix/common.nix` (mirrors `lists/common/`) |
 | Pop!_OS tools, Flatpak apps, dotfile packages | `os/popos/home.nix` |
 | apt packages (root) | `os/popos/prerequisites.sh` |
-| Tools not in nixpkgs | `os/popos/install_scripts/*.sh` |
+| Tools not in nixpkgs, firstmate checkout | `os/popos/install_scripts/*.sh` |
 
 - **Flatpak apps** are declared with
   [nix-flatpak](https://github.com/gmodena/nix-flatpak) (`services.flatpak`),
@@ -221,13 +227,14 @@ dev-setup/
 │   ├── run_os_steps.sh       # Runs the per-OS extra steps
 │   ├── setup_dotfiles.sh
 │   ├── setup_home_manager.sh # Installs Nix, applies the Home Manager config
-│   └── {export,restore}_{ssh,gpg}_key.sh
+│   ├── {export,restore}_{ssh,gpg}_key.sh
+│   └── {export,restore}_firstmate.sh # Encrypted backup of the firstmate home's private files
 ├── os/                       # Everything that only applies to one OS
 │   └── <os id>/
 │       ├── backend.sh        # The package-manager commands for this OS
 │       ├── home.nix          # Home Manager config; makes setup.sh use Nix (popos)
 │       ├── prerequisites.sh  # Optional step, runs before anything is installed (popos)
-│       └── install_scripts/  # Optional steps, run after the lists (fedora-atomic: autotiling)
+│       └── install_scripts/  # Optional steps, run after the lists (fedora-atomic: autotiling, popos: firstmate)
 ├── lists/
 │   ├── common/               # Entries for every OS
 │   │   └── {tools,apps,fonts,urls}.txt
@@ -431,3 +438,33 @@ To restore keys exported from another machine, use the `restore_ssh_key.sh` or `
 These scripts use paths relative to the current directory (`vault/`), so run
 them from the repository root. They need `age`; on Pop!_OS Home Manager
 installs it (`nix/common.nix`).
+
+## Firstmate Backup (Optional)
+
+`export_firstmate.sh` backs up the private files of the firstmate home
+(`~/firstmate` by default) into one age-encrypted archive,
+`vault/firstmate.tar.age`: `data/captain.md`, `data/projects.md`,
+`data/learnings.md` (if it exists) and every file under `config/`. age asks for
+a passphrase; it is never passed on the command line. This is a one-way
+snapshot: firstmate keeps its files in its own home, so export again whenever
+you want a fresh backup.
+
+```bash
+# Back up ~/firstmate (or $FM_HOME, or --home <dir>)
+./scripts/export_firstmate.sh
+# See which files would be backed up
+./scripts/export_firstmate.sh --dry-run
+```
+
+`restore_firstmate.sh` decrypts the archive (age asks for the passphrase) and
+puts the files back into the firstmate home, keeping their file modes. Clone
+firstmate there first (on Pop!_OS `setup.sh` does that). An existing file that differs is first moved, with its
+mode, into `data/.restore-backup-<timestamp>/<path>` in the firstmate home
+(the export never archives it); identical files are left alone. `--dry-run` shows what would change.
+
+```bash
+./scripts/restore_firstmate.sh
+```
+
+`setup.sh` never runs the restore: run it by hand, from the repository root,
+when you want the files back. Like the key scripts, both need `age`.
