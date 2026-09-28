@@ -220,9 +220,19 @@ into `/nix/store` and lists every link it would make, file it would back up and
 package it would install. It changes none of your files; only Nix and Home
 Manager bookkeeping (`~/.cache/nix`, `~/.local/share/home-manager`) may appear.
 
-Old Stow links into `dotfiles/` need no clean-up first: they point at the
-same files as the Home Manager links, so the switch simply replaces them (no
-`.hm-backup`), and a switch that fails leaves either kind of link in place.
+Old Stow file links into `dotfiles/` point at the same files as the Home
+Manager links, so the switch simply replaces them (no `.hm-backup`). Stow
+also folds a directory it created into one directory link (for example
+`~/.zshrc.d` or `~/.config/nvim`), and those make the first switch fail with
+"would be clobbered". So on a machine still set up with Stow, remove the Stow
+links by hand before the first switch, from the checkout:
+
+```bash
+stow -D -d "$PWD/dotfiles" -t "$HOME" alacritty bash ghostty git gnupg nvim rofi starship sway tmux waybar zsh
+```
+
+Only do this before the first switch: once Home Manager is applied, `stow -D`
+fails on its `/nix/store` links. A switch that fails leaves the links in place.
 
 The files under `lists/popos/` are no longer read by `setup.sh`; they stay for
 the individual scripts until the Nix path has been used on a real machine.

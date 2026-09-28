@@ -9,7 +9,10 @@
 # DEV_SETUP_ROOT (this checkout, which the dotfile links point into).
 #
 # Any file in the way of a Home Manager link is renamed to <file>.hm-backup. Old
-# Stow links into dotfiles/ are simply replaced: they point at the same files.
+# Stow file links into dotfiles/ are simply replaced: they point at the same
+# files. Stow's folded directory links (e.g. ~/.zshrc.d) make the first switch
+# fail, so a machine still on Stow must run `stow -D` by hand first (README
+# "Pop!_OS with Nix" gives the command).
 #
 # --dry-run installs nothing. When Nix is already installed it previews the
 # switch with `home-manager switch --dry-run`, which builds into /nix/store but
@@ -105,7 +108,7 @@ setup_home_manager() {
 
   log_info "Applying the Home Manager configuration (files in the way are renamed to *.$HM_BACKUP_EXT)..."
   if ! home_manager switch --impure --flake "$FLAKE" -b "$HM_BACKUP_EXT"; then
-    log_error "Home Manager switch failed"
+    log_error "Home Manager switch failed. If it names files that would be clobbered, they are likely Stow directory links; remove the Stow links first: stow -D -d \"$DEV_SETUP_ROOT/dotfiles\" -t \"$HOME\" alacritty bash ghostty git gnupg nvim rofi starship sway tmux waybar zsh (README \"Pop!_OS with Nix\")"
     exit 1
   fi
   log_success "Home Manager configuration applied"
