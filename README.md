@@ -220,13 +220,13 @@ into `/nix/store` and lists every link it would make, file it would back up and
 package it would install. It changes none of your files; only Nix and Home
 Manager bookkeeping (`~/.cache/nix`, `~/.local/share/home-manager`) may appear.
 
-Old Stow file links into `dotfiles/` point at the same files as the Home
-Manager links, so the switch simply replaces them (no `.hm-backup`). Stow
-also folds a directory it created into one directory link (for example
-`~/.zshrc.d` or `~/.config/nvim`), and those make the first switch fail with
-"would be clobbered". So on a machine still set up with Stow, remove the Stow
-links of every package under `dotfiles/` by hand before the first switch,
-from the checkout:
+The switch does not remove Stow links. Stow folds a directory it created into
+one directory link (for example `~/.gnupg` or `~/.config/nvim`); Home Manager
+keeps such a link, as it points at the same files, and then writes its own
+links through it into `dotfiles/`, changing files in the checkout (for example
+`dotfiles/gnupg/.gnupg/gpg-agent.conf`). So on a machine still set up with
+Stow, remove the Stow links of every package under `dotfiles/` by hand before
+the first switch, from the checkout:
 
 ```bash
 (cd dotfiles && stow -D -t "$HOME" */)

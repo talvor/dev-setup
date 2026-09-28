@@ -8,11 +8,11 @@
 # configuration is evaluated with --impure: it reads USER, HOME and
 # DEV_SETUP_ROOT (this checkout, which the dotfile links point into).
 #
-# Any file in the way of a Home Manager link is renamed to <file>.hm-backup. Old
-# Stow file links into dotfiles/ are simply replaced: they point at the same
-# files. Stow's folded directory links (e.g. ~/.zshrc.d) make the first switch
-# fail, so a machine still on Stow must run `stow -D` by hand first (README
-# "Pop!_OS with Nix" gives the command).
+# Any file in the way of a Home Manager link is renamed to <file>.hm-backup.
+# Stow links are not removed: a machine still on Stow must run `stow -D` by hand
+# before the first switch (README "Pop!_OS with Nix" gives the command).
+# Otherwise the switch succeeds but keeps Stow's folded directory links (e.g.
+# ~/.gnupg) and writes Home Manager links through them into dotfiles/.
 #
 # --dry-run installs nothing. When Nix is already installed it previews the
 # switch with `home-manager switch --dry-run`, which builds into /nix/store but
@@ -78,14 +78,13 @@ home_manager() {
   nix run "$DEV_SETUP_ROOT#home-manager" -- "$@"
 }
 
-# Stow's folded directory links (e.g. ~/.zshrc.d) make a switch fail with
-# "would be clobbered"; point at the stow -D that removes them
+# Point at the stow -D a machine still on Stow needs before its first switch
 log_stow_hint() {
   local dir pkgs=""
   for dir in "$DEV_SETUP_ROOT"/dotfiles/*/; do
     pkgs+=" $(basename "$dir")"
   done
-  log_error "If it names files that would be clobbered, they are likely Stow directory links; remove the Stow links first: stow -D -d \"$DEV_SETUP_ROOT/dotfiles\" -t \"$HOME\"$pkgs (README \"Pop!_OS with Nix\")"
+  log_error "If this machine still has Stow links, remove them first: stow -D -d \"$DEV_SETUP_ROOT/dotfiles\" -t \"$HOME\"$pkgs (README \"Pop!_OS with Nix\")"
 }
 
 setup_home_manager() {
