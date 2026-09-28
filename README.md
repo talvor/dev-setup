@@ -135,7 +135,10 @@ On Pop!_OS, `./setup.sh` runs three steps:
 The flake follows `nixos-unstable` (with Home Manager `master`), so newer tools
 such as `herdr` come straight from nixpkgs; `flake.lock` pins the exact
 revision. Run `nix flake update` to move to a newer unstable revision.
-A `herdr` left in `~/.local/bin` by its old installer can be deleted.
+Existing installs should delete the `herdr` left in `~/.local/bin` by its old
+installer (`rm ~/.local/bin/herdr`): `~/.local/bin` comes first on the `PATH`,
+so it shadows the Nix `herdr`. `scripts/setup_home_manager.sh` warns while it
+is there, but does not delete it.
 
 Nix is installed with the official multi-user installer
 (`https://nixos.org/nix/install --daemon`): it is upstream Nix, sets up
