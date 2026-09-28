@@ -145,11 +145,10 @@ On Pop!_OS, `./setup.sh` runs three steps:
    flakes), `flatpak` (host integration for the apps), `fontconfig`, `zsh`
    (login shell, must be in `/etc/shells`), `alacritty` and `claude-desktop`
    (GUI apps that are not on Flathub; Nix GUI apps lack the host graphics
-   drivers), `stow` (to remove the old Stow links) and `build-essential` (the
-   host C toolchain).
+   drivers), `stow` (for the fallback `scripts/setup_dotfiles.sh`) and
+   `build-essential` (the host C toolchain).
 2. **Nix and Home Manager** (`scripts/setup_home_manager.sh`): installs Nix if
-   it is missing, removes the Stow links into `dotfiles/`, and applies
-   `homeConfigurations.popos` from `flake.nix`.
+   it is missing and applies `homeConfigurations.popos` from `flake.nix`.
 3. **OS install scripts** (`os/popos/install_scripts/`): what Nix does not
    set up. `firstmate.sh` clones
    [firstmate](https://github.com/kunchenguid/firstmate) into `~/firstmate`
@@ -221,8 +220,9 @@ into `/nix/store` and lists every link it would make, file it would back up and
 package it would install. It changes none of your files; only Nix and Home
 Manager bookkeeping (`~/.cache/nix`, `~/.local/share/home-manager`) may appear.
 
-If the switch fails after the Stow links were removed,
-`./scripts/setup_dotfiles.sh` puts them back.
+Old Stow links into `dotfiles/` need no clean-up first: they point at the
+same files as the Home Manager links, so the switch simply replaces them (no
+`.hm-backup`), and a switch that fails leaves either kind of link in place.
 
 The files under `lists/popos/` are no longer read by `setup.sh`; they stay for
 the individual scripts until the Nix path has been used on a real machine.

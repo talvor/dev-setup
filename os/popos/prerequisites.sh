@@ -19,8 +19,7 @@ install_prerequisites() {
   #   zsh        - login shell, must be in /etc/shells
   #   alacritty  - GUI app that is not on Flathub (Nix GUI apps lack the host
   #                graphics drivers)
-  #   stow       - removes the old Stow links before Home Manager takes over,
-  #                and the fallback scripts/setup_dotfiles.sh
+  #   stow       - the fallback scripts/setup_dotfiles.sh
   #   build-essential - the host C toolchain, for building against system
   #                libraries
   local packages=(
