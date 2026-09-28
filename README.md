@@ -129,9 +129,14 @@ On Pop!_OS, `./setup.sh` runs three steps:
 2. **Nix and Home Manager** (`scripts/setup_home_manager.sh`): installs Nix if
    it is missing, removes the Stow links into `dotfiles/`, and applies
    `homeConfigurations.popos` from `flake.nix`.
-3. **OS install scripts** (`os/popos/install_scripts/`): tools that are not in
-   nixpkgs. There are none today; the step is skipped when the directory is
-   missing.
+3. **OS install scripts** (`os/popos/install_scripts/`): what Nix does not
+   set up. `firstmate.sh` clones
+   [firstmate](https://github.com/kunchenguid/firstmate) into `~/firstmate`
+   unless that exists, creates `~/Development` and links
+   `~/firstmate/projects` to it. An existing `~/firstmate/projects` that is
+   anything else (a directory, or a link elsewhere) is left alone with a
+   warning. Restoring firstmate's private files is not part of setup (see
+   [Firstmate Backup](#firstmate-backup-optional)).
 
 The flake follows `nixos-unstable` (with Home Manager `master`), so newer tools
 such as `herdr` come straight from nixpkgs; `flake.lock` pins the exact
@@ -156,7 +161,7 @@ What goes where:
 | CLI tools, fonts shared by every Nix OS | `nix/common.nix` (mirrors `lists/common/`) |
 | Pop!_OS tools, Flatpak apps, dotfile packages | `os/popos/home.nix` |
 | apt packages (root) | `os/popos/prerequisites.sh` |
-| Tools not in nixpkgs | `os/popos/install_scripts/*.sh` |
+| Tools not in nixpkgs, firstmate checkout | `os/popos/install_scripts/*.sh` |
 
 - **Flatpak apps** are declared with
   [nix-flatpak](https://github.com/gmodena/nix-flatpak) (`services.flatpak`),
@@ -229,7 +234,7 @@ dev-setup/
 │       ├── backend.sh        # The package-manager commands for this OS
 │       ├── home.nix          # Home Manager config; makes setup.sh use Nix (popos)
 │       ├── prerequisites.sh  # Optional step, runs before anything is installed (popos)
-│       └── install_scripts/  # Optional steps, run after the lists (fedora-atomic: autotiling)
+│       └── install_scripts/  # Optional steps, run after the lists (fedora-atomic: autotiling, popos: firstmate)
 ├── lists/
 │   ├── common/               # Entries for every OS
 │   │   └── {tools,apps,fonts,urls}.txt
@@ -453,7 +458,7 @@ you want a fresh backup.
 
 `restore_firstmate.sh` decrypts the archive (age asks for the passphrase) and
 puts the files back into the firstmate home, keeping their file modes. Clone
-firstmate there first. An existing file that differs is kept as `<file>.bak`
+firstmate there first (on Pop!_OS `setup.sh` does that). An existing file that differs is kept as `<file>.bak`
 (or `<file>.bak.<timestamp>`) before it is replaced; identical files are left
 alone. `--dry-run` shows what would change.
 
