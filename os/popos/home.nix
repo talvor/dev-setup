@@ -19,6 +19,7 @@
     lazygit
     lazydocker
     gh
+    neovim
 
     # Utilities
     yubikey-manager
