@@ -18,6 +18,7 @@
     # Dev tools
     lazygit
     lazydocker
+    gh
 
   ];
 
