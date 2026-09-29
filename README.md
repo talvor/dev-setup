@@ -477,6 +477,28 @@ These scripts use paths relative to the current directory (`vault/`), so run
 them from the repository root. They need `age`; on Pop!_OS Home Manager
 installs it (`nix/common.nix`).
 
+### GPG Passphrase in the GNOME Keyring (Pop!_OS)
+
+`gpg-agent.conf` caches the passphrase for 400 days, so it is asked once per
+login or reboot. To not be asked at all, store it once in the GNOME keyring,
+where pinentry looks before prompting (COSMIC's prompt has no "Save in password
+manager" checkbox). Find the keygrip of the signing key (the `Keygrip` line
+under the key or subkey with `[S]`):
+
+```bash
+gpg --list-secret-keys --with-keygrip
+```
+
+Then store the passphrase; `secret-tool` (installed by Home Manager) prompts
+for it:
+
+```bash
+secret-tool store --label="GnuPG signing key" xdg:schema org.gnupg.Passphrase keygrip n/<keygrip>
+```
+
+This only helps while the GNOME keyring is unlocked, which it is after a
+password login (not after an automatic login).
+
 ## Firstmate Backup (Optional)
 
 `export_firstmate.sh` backs up the private files of the firstmate home

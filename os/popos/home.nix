@@ -17,6 +17,9 @@
     # Formerly installed with apt by ./prerequisites.sh
     wget
     unzip
+
+    # secret-tool, to store the GPG passphrase in the GNOME keyring (README)
+    libsecret
   ];
 
   # GUI apps stay Flatpaks: Nix GUI apps lack the host graphics drivers on a
