@@ -8,8 +8,13 @@
 # configuration is evaluated with --impure: it reads USER, HOME and
 # DEV_SETUP_ROOT (this checkout, which the dotfile links point into).
 #
-# Stow links into dotfiles/ are removed first, and any other file in the way of
-# a Home Manager link is renamed to <file>.hm-backup.
+# Any file in the way of a Home Manager link is renamed to <file>.hm-backup.
+# Stow links are not removed: a machine still on Stow must run `stow -D` by hand
+# before the first switch (README "Pop!_OS with Nix" gives the command).
+# Otherwise the switch would keep Stow's folded directory links (e.g. ~/.gnupg)
+# and write Home Manager links through them into dotfiles/, so this script
+# first checks $HOME (read-only) and stops, printing that command, if it finds
+# a link pointing into dotfiles/ other than through /nix/store.
 #
 # --dry-run installs nothing. When Nix is already installed it previews the
 # switch with `home-manager switch --dry-run`, which builds into /nix/store but
@@ -75,32 +80,37 @@ home_manager() {
   nix run "$DEV_SETUP_ROOT#home-manager" -- "$@"
 }
 
-# Stow links into dotfiles/ would be in the way of Home Manager's links.
-# stow -D only removes links that point into the package, so this is safe to
-# repeat.
-remove_stow_links() {
-  if ! command -v stow >/dev/null 2>&1; then
-    log_info "Stow is not installed; no Stow links to remove"
-    return 0
-  fi
-
-  local dir pkg output
-  log_info "Removing Stow links into $DEV_SETUP_ROOT/dotfiles..."
+# Point at the stow -D a machine still on Stow needs before its first switch
+log_stow_hint() {
+  local dir pkgs=""
   for dir in "$DEV_SETUP_ROOT"/dotfiles/*/; do
-    pkg=$(basename "$dir")
-    if is_dry_run; then
-      log_dry "would run: stow -D -d $DEV_SETUP_ROOT/dotfiles -t $HOME $pkg"
-      continue
-    fi
-    if ! output=$(stow -D -d "$DEV_SETUP_ROOT/dotfiles" -t "$HOME" "$pkg" 2>&1); then
-      log_warning "Could not remove the Stow links of $pkg"
-    fi
-    # Once Home Manager has run, Stow notes every one of its links; drop that
-    output=$(printf '%s\n' "$output" | grep -v '^Ignoring an absolute symlink' || true)
-    if [[ -n "$output" ]]; then
-      printf '%s\n' "$output" >&2
-    fi
+    pkgs+=" $(basename "$dir")"
   done
+  log_error "If this machine still has Stow links, remove them first: stow -D -d \"$DEV_SETUP_ROOT/dotfiles\" -t \"$HOME\"$pkgs (README \"Pop!_OS with Nix\")"
+}
+
+# Stop before a switch that would write through Stow links: any link in $HOME
+# at a path of a dotfiles/ package that points into dotfiles/ directly (Home
+# Manager's links point into /nix/store). Changes nothing.
+check_stow_links() {
+  local dotfiles pkg rel link target dir found=""
+  dotfiles=$(cd -P "$DEV_SETUP_ROOT/dotfiles" && pwd -P) || return 0
+  for pkg in "$dotfiles"/*/; do
+    while IFS= read -r rel; do
+      link="$HOME/${rel#./}"
+      [[ -L "$link" ]] || continue
+      target=$(readlink "$link")
+      [[ "$target" == /nix/store/* ]] && continue
+      [[ "$target" == /* ]] || target="$(dirname "$link")/$target"
+      dir=$(cd -P "$(dirname "$target")" 2>/dev/null && pwd -P) || continue
+      [[ "$dir/$(basename "$target")" == "$dotfiles"/* ]] && found+=" $link"
+    done < <(cd "$pkg" && find . -mindepth 1)
+  done
+  if [[ -n "$found" ]]; then
+    log_error "Stow links into $dotfiles found; the Home Manager switch would write through them into the checkout:$found"
+    log_stow_hint
+    exit 1
+  fi
 }
 
 setup_home_manager() {
@@ -109,15 +119,15 @@ setup_home_manager() {
     exit 1
   fi
 
+  check_stow_links
   install_nix
 
   if is_dry_run; then
-    remove_stow_links
     if load_nix; then
       log_info "Previewing the Home Manager switch (builds into /nix/store, changes none of your files)."
-      log_info "The Stow links above are still in place, so the preview lists them as files it would back up."
       if ! home_manager switch --dry-run --impure --flake "$FLAKE" -b "$HM_BACKUP_EXT"; then
         log_error "The Home Manager preview failed"
+        log_stow_hint
         exit 1
       fi
     else
@@ -126,19 +136,17 @@ setup_home_manager() {
     return 0
   fi
 
-  # Build before touching $HOME, so a broken configuration leaves the Stow
-  # links alone
+  # Build before touching $HOME, so a broken configuration changes nothing
   log_info "Building the Home Manager configuration for $DEV_SETUP_OS..."
   if ! nix build --no-link --impure "$DEV_SETUP_ROOT#homeConfigurations.$DEV_SETUP_OS.activationPackage"; then
     log_error "Building the Home Manager configuration failed; nothing was changed"
     exit 1
   fi
 
-  remove_stow_links
-
   log_info "Applying the Home Manager configuration (files in the way are renamed to *.$HM_BACKUP_EXT)..."
   if ! home_manager switch --impure --flake "$FLAKE" -b "$HM_BACKUP_EXT"; then
-    log_error "Home Manager switch failed. To put the Stow links back meanwhile, run ./scripts/setup_dotfiles.sh"
+    log_error "Home Manager switch failed"
+    log_stow_hint
     exit 1
   fi
   log_success "Home Manager configuration applied"
