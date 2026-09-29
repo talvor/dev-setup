@@ -149,7 +149,9 @@ On Pop!_OS, `./setup.sh` runs three steps:
    `build-essential` (the host C toolchain).
 2. **Nix and Home Manager** (`scripts/setup_home_manager.sh`): installs Nix if
    it is missing and applies `homeConfigurations.popos` from `flake.nix`. It
-   stops first if Stow links into `dotfiles/` remain (see below).
+   stops first if Stow links into `dotfiles/` remain (see below). Then it makes
+   the system zsh (`/usr/bin/zsh`) your login shell with `sudo chsh`, unless it
+   already is.
 3. **OS install scripts** (`os/popos/install_scripts/`): what Nix does not
    set up. `firstmate.sh` clones
    [firstmate](https://github.com/kunchenguid/firstmate) into `~/firstmate`
