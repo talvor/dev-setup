@@ -224,9 +224,12 @@ The switch does not remove Stow links. Stow folds a directory it created into
 one directory link (for example `~/.gnupg` or `~/.config/nvim`); Home Manager
 keeps such a link, as it points at the same files, and then writes its own
 links through it into `dotfiles/`, changing files in the checkout (for example
-`dotfiles/gnupg/.gnupg/gpg-agent.conf`). So on a machine still set up with
-Stow, remove the Stow links of every package under `dotfiles/` by hand before
-the first switch, from the checkout:
+`dotfiles/gnupg/.gnupg/gpg-agent.conf`). So before the preview or switch,
+`scripts/setup_home_manager.sh` checks (without changing anything) for links
+in `$HOME` that point into `dotfiles/` other than through `/nix/store`, and
+stops if it finds any. On a machine still set up with Stow, remove the Stow
+links of every package under `dotfiles/` by hand before the first switch, from
+the checkout:
 
 ```bash
 (cd dotfiles && stow -D -t "$HOME" */)

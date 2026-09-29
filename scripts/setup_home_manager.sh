@@ -11,8 +11,10 @@
 # Any file in the way of a Home Manager link is renamed to <file>.hm-backup.
 # Stow links are not removed: a machine still on Stow must run `stow -D` by hand
 # before the first switch (README "Pop!_OS with Nix" gives the command).
-# Otherwise the switch succeeds but keeps Stow's folded directory links (e.g.
-# ~/.gnupg) and writes Home Manager links through them into dotfiles/.
+# Otherwise the switch would keep Stow's folded directory links (e.g. ~/.gnupg)
+# and write Home Manager links through them into dotfiles/, so this script
+# first checks $HOME (read-only) and stops, printing that command, if it finds
+# a link pointing into dotfiles/ other than through /nix/store.
 #
 # --dry-run installs nothing. When Nix is already installed it previews the
 # switch with `home-manager switch --dry-run`, which builds into /nix/store but
@@ -87,12 +89,37 @@ log_stow_hint() {
   log_error "If this machine still has Stow links, remove them first: stow -D -d \"$DEV_SETUP_ROOT/dotfiles\" -t \"$HOME\"$pkgs (README \"Pop!_OS with Nix\")"
 }
 
+# Stop before a switch that would write through Stow links: any link in $HOME
+# at a path of a dotfiles/ package that points into dotfiles/ directly (Home
+# Manager's links point into /nix/store). Changes nothing.
+check_stow_links() {
+  local dotfiles pkg rel link target dir found=""
+  dotfiles=$(cd -P "$DEV_SETUP_ROOT/dotfiles" && pwd -P) || return 0
+  for pkg in "$dotfiles"/*/; do
+    while IFS= read -r rel; do
+      link="$HOME/${rel#./}"
+      [[ -L "$link" ]] || continue
+      target=$(readlink "$link")
+      [[ "$target" == /nix/store/* ]] && continue
+      [[ "$target" == /* ]] || target="$(dirname "$link")/$target"
+      dir=$(cd -P "$(dirname "$target")" 2>/dev/null && pwd -P) || continue
+      [[ "$dir/$(basename "$target")" == "$dotfiles"/* ]] && found+=" $link"
+    done < <(cd "$pkg" && find . -mindepth 1)
+  done
+  if [[ -n "$found" ]]; then
+    log_error "Stow links into $dotfiles found; the Home Manager switch would write through them into the checkout:$found"
+    log_stow_hint
+    exit 1
+  fi
+}
+
 setup_home_manager() {
   if ! uses_home_manager; then
     log_error "$DEV_SETUP_OS is not set up with Home Manager (no os/$DEV_SETUP_OS/home.nix)"
     exit 1
   fi
 
+  check_stow_links
   install_nix
 
   if is_dry_run; then
