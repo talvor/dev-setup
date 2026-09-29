@@ -446,6 +446,7 @@ To securely export your SSH keys, use the `export_ssh_key.sh` or `export_gpg_key
 ```
 
 The encrypted key will be saved in the `vault/` directory. You can transfer this file to another machine for restoration.
+`vault/` is gitignored, so copy it to the new machine manually.
 
 ### Restoring SSH and GPG Keys
 To restore keys exported from another machine, use the `restore_ssh_key.sh` or `restore_gpg_key.sh` script. This script decrypts and reinstalls your private keys.
