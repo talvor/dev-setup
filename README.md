@@ -265,7 +265,9 @@ dev-setup/
 │   ├── setup_dotfiles.sh
 │   ├── setup_home_manager.sh # Installs Nix, applies the Home Manager config
 │   ├── {export,restore}_{ssh,gpg}_key.sh
-│   └── {export,restore}_firstmate.sh # Encrypted backup of the firstmate home's private files
+│   ├── {export,restore}_firstmate.sh # Encrypted backup of the firstmate home's private files
+│   ├── restore_vault.sh      # Menu to restore any of the above; copy to a USB drive with vault/
+│   └── prepare_usb.sh        # Copies restore_vault.sh and vault/ onto a USB drive
 ├── os/                       # Everything that only applies to one OS
 │   └── <os id>/
 │       ├── backend.sh        # The package-manager commands for this OS
@@ -528,3 +530,27 @@ mode, into `data/.restore-backup-<timestamp>/<path>` in the firstmate home
 
 `setup.sh` never runs the restore: run it by hand, from the repository root,
 when you want the files back. Like the key scripts, both need `age`.
+
+### Restoring from a USB Drive
+
+`restore_vault.sh` asks which of the GPG key, SSH key and firstmate files to
+restore (pick several, e.g. `1 3`, or `a` for all; only items found in the
+vault are offered) and runs the matching `restore_*.sh` script for each.
+`prepare_usb.sh` copies it and every file of `vault/` onto a USB drive
+(replacing files that differ, deleting nothing; `--dry-run` shows the plan):
+
+```bash
+./scripts/prepare_usb.sh /media/$USER/USB
+```
+
+```text
+<usb>/restore_vault.sh
+<usb>/vault/            # gpg_key.age, gpg_ownertrust, ssh_key_*.age, firstmate.tar.age
+```
+
+On the new machine, clone dev-setup first (`install.sh`), then run
+`bash /path/to/usb/restore_vault.sh`. It reads the vault next to itself (or
+`--vault <dir>`) and the restore scripts from `~/Development/dev-setup`
+(`$DEV_SETUP_DIR` or `--repo <dir>`). `--dry-run` changes nothing; firstmate
+still decrypts to list its files. Run from the clone's `scripts/` it uses the
+restore scripts beside it and the `vault/` in the current directory.
