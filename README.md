@@ -335,8 +335,9 @@ Follow Pop!_OS:
    `devSetup.dotfiles` packages). Its presence makes `setup.sh` take the Nix
    path for the OS.
 2. Add the id and the systems to check to `oses` in `flake.nix`.
-3. Keep root-level work in `os/<id>/prerequisites.sh`, and tools that nixpkgs
-   lacks in `os/<id>/install_scripts/`.
+3. Keep root-level work in `os/<id>/prerequisites.sh` (including the system
+   zsh that `setup_home_manager.sh` makes the login shell), and tools that
+   nixpkgs lacks in `os/<id>/install_scripts/`.
 4. Shared settings belong in `nix/common.nix`; keep it in step with
    `lists/common/`. On macOS that likely means nix-darwin or Homebrew for GUI
    apps instead of Flatpak.
