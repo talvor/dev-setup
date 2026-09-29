@@ -20,6 +20,9 @@
 
     # secret-tool, to store the GPG passphrase in the GNOME keyring (README)
     libsecret
+
+    ghostty
+    claude-code
   ];
 
   # GUI apps stay Flatpaks: Nix GUI apps lack the host graphics drivers on a
@@ -31,6 +34,10 @@
       {
         name = "flathub";
         location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
+      },
+      {
+        name = "flatpark";
+        location = "https://dl.flatpark.org/flatpark.flatpakrepo";
       }
     ];
     packages = [
@@ -41,6 +48,7 @@
       "com.axosoft.GitKraken"
       "com.getpostman.Postman"
       "com.visualstudio.code"
+      "com.anthropic.ClaudeDesktop"
 
       # Productivity
       "md.obsidian.Obsidian"
@@ -53,17 +61,12 @@
   # dotfiles/ packages to link into $HOME (all of dotfiles/zsh/.zsh is linked;
   # ~/.zshrc sources ~/.zsh/popos.zshrc)
   devSetup.dotfiles = [
-    "alacritty"
     "bash"
     "ghostty"
     "git"
     "gnupg"
     "nvim"
-    "rofi"
     "starship"
-    "sway"
-    "tmux"
-    "waybar"
     "zsh"
   ];
 }
