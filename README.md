@@ -149,7 +149,9 @@ On Pop!_OS, `./setup.sh` runs three steps:
    `build-essential` (the host C toolchain).
 2. **Nix and Home Manager** (`scripts/setup_home_manager.sh`): installs Nix if
    it is missing and applies `homeConfigurations.popos` from `flake.nix`. It
-   stops first if Stow links into `dotfiles/` remain (see below).
+   stops first if Stow links into `dotfiles/` remain (see below). Then it makes
+   the system zsh (`/usr/bin/zsh`) your login shell with `sudo chsh`, unless it
+   already is.
 3. **OS install scripts** (`os/popos/install_scripts/`): what Nix does not
    set up. `firstmate.sh` clones
    [firstmate](https://github.com/kunchenguid/firstmate) into `~/firstmate`
@@ -333,8 +335,9 @@ Follow Pop!_OS:
    `devSetup.dotfiles` packages). Its presence makes `setup.sh` take the Nix
    path for the OS.
 2. Add the id and the systems to check to `oses` in `flake.nix`.
-3. Keep root-level work in `os/<id>/prerequisites.sh`, and tools that nixpkgs
-   lacks in `os/<id>/install_scripts/`.
+3. Keep root-level work in `os/<id>/prerequisites.sh` (including the system
+   zsh that `setup_home_manager.sh` makes the login shell), and tools that
+   nixpkgs lacks in `os/<id>/install_scripts/`.
 4. Shared settings belong in `nix/common.nix`; keep it in step with
    `lists/common/`. On macOS that likely means nix-darwin or Homebrew for GUI
    apps instead of Flatpak.
