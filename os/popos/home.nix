@@ -11,9 +11,9 @@
 
   home.packages = with pkgs; [
     # Terminal and AI
-    ghostty
     claude-code
     herdr
+    direnv
 
     # Dev tools
     lazygit
