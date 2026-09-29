@@ -11,6 +11,10 @@
     # Formerly installed from URLs
     starship
 
+    # Login shell (scripts/setup_home_manager.sh sets it with chsh). Only the
+    # package: the config stays in dotfiles/zsh, so no programs.zsh.
+    zsh
+
     # Needed by scripts/restore_{ssh,gpg,firstmate}_key.sh
     age
 

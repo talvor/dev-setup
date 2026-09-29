@@ -8,6 +8,10 @@
 # configuration is evaluated with --impure: it reads USER, HOME and
 # DEV_SETUP_ROOT (this checkout, which the dotfile links point into).
 #
+# Afterwards the zsh from Home Manager (~/.nix-profile/bin/zsh, a link that
+# survives updates) becomes the login shell of $USER: Home Manager cannot change
+# it outside NixOS, so the script adds it to /etc/shells and runs chsh (sudo).
+#
 # Any file in the way of a Home Manager link is renamed to <file>.hm-backup.
 # Stow links are not removed: a machine still on Stow must run `stow -D` by hand
 # before the first switch (README "Pop!_OS with Nix" gives the command).
@@ -27,6 +31,7 @@ init_script "$@"
 NIX_INSTALL_URL="https://nixos.org/nix/install"
 NIX_DAEMON_PROFILE="/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
 HM_BACKUP_EXT="hm-backup"
+HM_ZSH="$HOME/.nix-profile/bin/zsh"
 FLAKE="$DEV_SETUP_ROOT#$DEV_SETUP_OS"
 
 # Flakes for every nix call below, even if nix.conf does not enable them
@@ -113,6 +118,48 @@ check_stow_links() {
   fi
 }
 
+# The login shell of $USER, from the user database
+login_shell() {
+  if command -v getent >/dev/null 2>&1; then
+    getent passwd "$USER" | cut -d: -f7
+  else
+    dscl . -read "/Users/$USER" UserShell 2>/dev/null | awk '{print $2}'
+  fi
+}
+
+# Make the Home Manager zsh the login shell of $USER. Does nothing if it
+# already is.
+set_login_shell() {
+  local current
+  current=$(login_shell)
+  if [[ "$current" == "$HM_ZSH" ]]; then
+    log_info "Login shell is already $HM_ZSH"
+    return 0
+  fi
+
+  if ! is_dry_run && [[ ! -x "$HM_ZSH" ]]; then
+    log_error "$HM_ZSH not found; the Home Manager configuration should install zsh"
+    exit 1
+  fi
+
+  log_info "Setting the login shell of $USER to $HM_ZSH (was ${current:-unknown})..."
+  if ! grep -qxF "$HM_ZSH" /etc/shells 2>/dev/null; then
+    if is_dry_run; then
+      log_dry "would add $HM_ZSH to /etc/shells"
+    elif ! echo "$HM_ZSH" | sudo tee -a /etc/shells >/dev/null; then
+      log_error "Adding $HM_ZSH to /etc/shells failed"
+      exit 1
+    fi
+  fi
+  if ! run sudo chsh -s "$HM_ZSH" "$USER"; then
+    log_error "Changing the login shell failed"
+    exit 1
+  fi
+  if ! is_dry_run; then
+    log_success "Login shell set to $HM_ZSH (takes effect at the next login)"
+  fi
+}
+
 setup_home_manager() {
   if ! uses_home_manager; then
     log_error "$DEV_SETUP_OS is not set up with Home Manager (no os/$DEV_SETUP_OS/home.nix)"
@@ -133,6 +180,7 @@ setup_home_manager() {
     else
       log_dry "would run: home-manager switch --impure --flake $FLAKE -b $HM_BACKUP_EXT"
     fi
+    set_login_shell
     return 0
   fi
 
@@ -150,6 +198,8 @@ setup_home_manager() {
     exit 1
   fi
   log_success "Home Manager configuration applied"
+
+  set_login_shell
 
   if [[ -e "$HOME/.local/bin/herdr" ]]; then
     log_warning "$HOME/.local/bin/herdr (from the old herdr installer) comes before the Nix herdr on the PATH. Remove it with: rm ~/.local/bin/herdr"
