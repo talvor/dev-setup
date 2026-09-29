@@ -1,5 +1,9 @@
 # Pop!_OS. Sourced by ~/.zshrc.
 
+# The Home Manager zsh (the login shell) skips the Debian /etc/zsh/zshrc: key
+# bindings (Home, End, Delete, ...) and completion setup
+[[ ! /proc/$$/exe -ef /usr/bin/zsh && -r /etc/zsh/zshrc ]] && source /etc/zsh/zshrc
+
 # Nix and the Home Manager session (os/popos/home.nix): PATH, fonts, terminfo
 [[ -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]] &&
   source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh

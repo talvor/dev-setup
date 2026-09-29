@@ -118,20 +118,11 @@ check_stow_links() {
   fi
 }
 
-# The login shell of $USER, from the user database
-login_shell() {
-  if command -v getent >/dev/null 2>&1; then
-    getent passwd "$USER" | cut -d: -f7
-  else
-    dscl . -read "/Users/$USER" UserShell 2>/dev/null | awk '{print $2}'
-  fi
-}
-
 # Make the Home Manager zsh the login shell of $USER. Does nothing if it
 # already is.
 set_login_shell() {
   local current
-  current=$(login_shell)
+  current=$(getent passwd "$USER" | cut -d: -f7)
   if [[ "$current" == "$HM_ZSH" ]]; then
     log_info "Login shell is already $HM_ZSH"
     return 0
