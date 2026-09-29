@@ -24,6 +24,16 @@ home-manager.lib.homeManagerConfiguration {
     {
       home = { inherit username homeDirectory; };
       devSetup.root = root;
+
+      # Nix is installed without channels, so point <nixpkgs> (nix-shell -p)
+      # and the nixpkgs flake registry entry (nix shell nixpkgs#...) at the
+      # nixpkgs pinned by flake.lock. keepOldNixPath is off because the
+      # installer's default NIX_PATH names the missing channels directory.
+      nix = {
+        registry.nixpkgs.flake = nixpkgs;
+        nixPath = [ "nixpkgs=${nixpkgs}" ];
+        keepOldNixPath = false;
+      };
     }
   ];
 }
