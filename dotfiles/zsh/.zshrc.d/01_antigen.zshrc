@@ -15,6 +15,7 @@ antigen bundle command-not-found
 antigen bundle zsh-users/zsh-syntax-highlighting
 # antigen bundle tmux
 antigen bundle direnv
+antigen bundle lukechilds/zsh-nvm
 
 # Tell Antigen that you're done.
 antigen apply
