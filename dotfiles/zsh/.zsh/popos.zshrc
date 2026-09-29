@@ -3,6 +3,10 @@
 # Nix and the Home Manager session (os/popos/home.nix): PATH, fonts, terminfo
 [[ -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]] &&
   source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+# hm-session-vars.sh only runs once per environment, but the desktop session
+# exports NIX_PATH (the missing channels dir) and shells inherit the guard, so
+# clear it to always apply the Home Manager values (e.g. NIX_PATH).
+unset __HM_SESS_VARS_SOURCED
 [[ -r ~/.nix-profile/etc/profile.d/hm-session-vars.sh ]] &&
   source ~/.nix-profile/etc/profile.d/hm-session-vars.sh
 

@@ -22,6 +22,8 @@ install_prerequisites() {
   #   stow       - the fallback scripts/setup_dotfiles.sh
   #   build-essential - the host C toolchain, for building against system
   #                libraries
+  #   pcscd, scdaemon - smart card access for the YubiKey (ykman, gpg-agent).
+  #                pcscd is a root daemon; scdaemon must match the apt gpg
   local packages=(
     build-essential
     ca-certificates
@@ -33,6 +35,8 @@ install_prerequisites() {
     fontconfig
     flatpak
     zsh
+    pcscd
+    scdaemon
   )
 
   # GUI apps from custom APT repositories (lists/popos/tools.txt format)

@@ -20,6 +20,8 @@
     lazydocker
     gh
 
+    # Utilities
+    yubikey-manager
   ];
 
   # GUI apps stay Flatpaks: Nix GUI apps lack the host graphics drivers on a
