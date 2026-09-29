@@ -8,14 +8,10 @@
   nixpkgs.config.allowUnfreePredicate = pkg: lib.elem (lib.getName pkg) [ "claude-code" ];
 
   home.packages = with pkgs; [
-    # Command line tools
-    tmux
-
     # Formerly installed from URLs
     starship
-    claude-code
 
-    # Needed by scripts/restore_{ssh,gpg}_key.sh
+    # Needed by scripts/restore_{ssh,gpg,firstmate}_key.sh
     age
 
     # Nerd Fonts

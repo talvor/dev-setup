@@ -10,19 +10,15 @@
   };
 
   home.packages = with pkgs; [
-    # Formerly installed from URLs
-    lazydocker
-    herdr
-
-    # Formerly installed with apt by ./prerequisites.sh
-    wget
-    unzip
-
-    # secret-tool, to store the GPG passphrase in the GNOME keyring (README)
-    libsecret
-
+    # Terminal and AI
     ghostty
     claude-code
+    herdr
+
+    # Dev tools
+    lazygit
+    lazydocker
+
   ];
 
   # GUI apps stay Flatpaks: Nix GUI apps lack the host graphics drivers on a
@@ -34,21 +30,16 @@
       {
         name = "flathub";
         location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
-      },
-      {
-        name = "flatpark";
-        location = "https://dl.flatpark.org/flatpark.flatpakrepo";
       }
     ];
     packages = [
       # Browsers
       "org.chromium.Chromium"
 
-      # Development
+      # Development and AI
       "com.axosoft.GitKraken"
       "com.getpostman.Postman"
       "com.visualstudio.code"
-      "com.anthropic.ClaudeDesktop"
 
       # Productivity
       "md.obsidian.Obsidian"

@@ -26,13 +26,13 @@ install_prerequisites() {
     build-essential
     ca-certificates
     curl
+    wget
     git
     xz-utils
-    stow
+    unzip
     fontconfig
     flatpak
     zsh
-    alacritty
   )
 
   # GUI apps from custom APT repositories (lists/popos/tools.txt format)
