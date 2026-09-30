@@ -207,8 +207,9 @@ What goes where:
   apps (the terminals) see them; Flatpak apps do not, as the sandbox has no
   `/nix/store`.
 
-After changing a `.nix` file, apply it again with
-`./scripts/setup_home_manager.sh` (quick when Nix is installed). It exports
+After changing a `.nix` file, apply it again with `./rebuild.sh` (quick when
+Nix is installed). It only calls `scripts/setup_home_manager.sh` with the same
+arguments (`--dry-run`, `--os`), which exports
 `DEV_SETUP_ROOT` and passes `--impure`: the configuration reads `USER`, `HOME`
 and `DEV_SETUP_ROOT` from the environment, so it is not tied to one user or
 checkout path. By hand that is:
@@ -250,6 +251,7 @@ the individual scripts until the Nix path has been used on a real machine.
 dev-setup/
 ├── install.sh                # Bootstrap: clone from GitHub, print next steps
 ├── setup.sh                  # Main setup script
+├── rebuild.sh                # Applies the Home Manager config again (popos)
 ├── flake.nix, flake.lock     # Home Manager configurations (Nix OSes: popos)
 ├── nix/
 │   ├── mk-home.nix           # Builds one OS's configuration
@@ -438,7 +440,7 @@ Every shell script must pass `bash -n` and [shellcheck](https://www.shellcheck.n
 bash 3.2 because macOS ships it.
 
 ```bash
-files=(install.sh setup.sh lib/*.sh scripts/*.sh os/*/*.sh os/*/install_scripts/*.sh)
+files=(install.sh setup.sh rebuild.sh lib/*.sh scripts/*.sh os/*/*.sh os/*/install_scripts/*.sh)
 for f in "${files[@]}"; do bash -n "$f"; done
 shellcheck "${files[@]}"
 ```
