@@ -59,7 +59,7 @@ cd dev-setup
 
 | OS id           | System                                   | Tools        | GUI apps       | Status |
 | --------------- | ---------------------------------------- | ------------ | -------------- | ------ |
-| `popos`         | Pop!_OS                                  | Nix + Home Manager (root-level bits: `apt`) | Flatpak, declared with nix-flatpak | Nix config built and activated in a container; not yet applied on a real machine |
+| `popos`         | Pop!_OS                                  | Nix + Home Manager (root-level bits: `apt`) | Flatpak, declared with nix-flatpak; Ghostty from nixpkgs, wrapped with nixGL | Nix config built and activated in a container; not yet applied on a real machine |
 | `fedora-atomic` | Fedora Atomic (Silverblue, Kinoite, ...) | `rpm-ostree` | Flatpak        | **unverified** |
 | `macos`         | macOS                                    | Homebrew     | Homebrew casks | **unverified** |
 | `omarchy`       | Omarchy (Arch Linux)                     | `pacman`     | `pacman`       | **unverified, untested backend** |
@@ -145,8 +145,8 @@ On Pop!_OS, `./setup.sh` runs three steps:
    flakes), `flatpak` (host integration for the apps), `fontconfig`, `zsh`
    (login shell, must be in `/etc/shells`), `alacritty` and `claude-desktop`
    (GUI apps that are not on Flathub; a Nix GUI app lacks the host graphics
-   drivers unless it is wrapped with nixGL), `stow` (for the fallback `scripts/setup_dotfiles.sh`) and
-   `build-essential` (the host C toolchain).
+   drivers unless it is wrapped with nixGL), `stow` (for the fallback
+   `scripts/setup_dotfiles.sh`) and `build-essential` (the host C toolchain).
 2. **Nix and Home Manager** (`scripts/setup_home_manager.sh`): installs Nix if
    it is missing and applies `homeConfigurations.popos` from `flake.nix`. It
    stops first if Stow links into `dotfiles/` remain (see below). Then it makes
