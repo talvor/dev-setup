@@ -144,8 +144,8 @@ On Pop!_OS, `./setup.sh` runs three steps:
    root or cannot come from Nix: `curl`, `git`, `xz-utils` (Nix installer and
    flakes), `flatpak` (host integration for the apps), `fontconfig`, `zsh`
    (login shell, must be in `/etc/shells`), `alacritty` and `claude-desktop`
-   (GUI apps that are not on Flathub; Nix GUI apps lack the host graphics
-   drivers), `stow` (for the fallback `scripts/setup_dotfiles.sh`) and
+   (GUI apps that are not on Flathub; a Nix GUI app lacks the host graphics
+   drivers unless it is wrapped with nixGL), `stow` (for the fallback `scripts/setup_dotfiles.sh`) and
    `build-essential` (the host C toolchain).
 2. **Nix and Home Manager** (`scripts/setup_home_manager.sh`): installs Nix if
    it is missing and applies `homeConfigurations.popos` from `flake.nix`. It
@@ -182,7 +182,7 @@ What goes where:
 | What | Declared in |
 | ---- | ----------- |
 | CLI tools, fonts shared by every Nix OS | `nix/common.nix` (mirrors `lists/common/`) |
-| Pop!_OS tools, Flatpak apps, dotfile packages | `os/popos/home.nix` |
+| Pop!_OS tools, Ghostty (nixGL), Flatpak apps, dotfile packages | `os/popos/home.nix` |
 | apt packages (root) | `os/popos/prerequisites.sh` |
 | Tools not in nixpkgs, firstmate checkout | `os/popos/install_scripts/*.sh` |
 
@@ -192,6 +192,14 @@ What goes where:
   --user`) by a systemd user service that starts on switch and at login. Apps
   that are not declared are left alone, including ones installed system-wide
   by the old path.
+- **Ghostty** is the one GUI app installed from nixpkgs. A Nix GUI app cannot
+  use the host graphics drivers on a non-Nix system, so the `nixgl` flake
+  input ([nixGL](https://github.com/nix-community/nixGL)) and Home Manager's
+  `targets.genericLinux.nixGL` wrap it (`config.lib.nixGL.wrap`): the
+  `ghostty` command and its launcher start it with Nix's own Mesa, and no
+  separately installed `nixGL` command is needed. The Mesa wrapper covers
+  Intel and AMD graphics; the NVIDIA wrappers are not used, as they need
+  `--impure` and would break `nix flake check`.
 - **Dotfiles**: `devSetup.dotfiles` lists the packages under `dotfiles/`, as
   `lists/popos/dotfiles.txt` did. Each package's top-level entries are linked
   into `$HOME` (entries of `.config`, `.gnupg` and `.local` one level down, as
