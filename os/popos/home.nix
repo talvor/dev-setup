@@ -1,12 +1,26 @@
 # Pop!_OS: Home Manager on a non-NixOS system (the Nix counterpart of
 # lists/popos/*.txt). Whatever needs root stays in ./prerequisites.sh.
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  nixgl,
+  ...
+}:
+let
+  # Ghostty needs OpenGL, so its binaries are wrapped to start through nixGL
+  wrappedGhostty = config.lib.nixGL.wrap pkgs.ghostty;
+in
 {
   targets.genericLinux = {
     enable = true;
-    # Nix graphics drivers (Mesa, plus a sudo setup step) are only needed by
-    # Nix GUI apps, and the GUI apps here are Flatpaks or apt packages
+    # Host-wide Nix graphics drivers (Mesa, plus a sudo setup step) are left
+    # off: the one Nix GUI app here (Ghostty) is wrapped with nixGL instead
     gpu.enable = false;
+    # nixGL gives a wrapped Nix GUI app Nix's own Mesa (config.lib.nixGL.wrap).
+    # The default wrapper is "mesa" (nixGLIntel), which builds without --impure
+    # and suits the Intel graphics in use.
+    nixGL.packages = nixgl.packages;
   };
 
   home.packages = with pkgs; [
@@ -14,6 +28,7 @@
     claude-code
     herdr
     direnv
+    wrappedGhostty
 
     # Dev tools
     lazygit
@@ -25,9 +40,28 @@
     yubikey-manager
   ];
 
-  # GUI apps stay Flatpaks: Nix GUI apps lack the host graphics drivers on a
-  # non-NixOS system. nix-flatpak installs them for this user from Flathub and
-  # leaves apps it does not manage alone.
+  # Launcher for the nixGL-wrapped Ghostty. It takes the place of the entry
+  # the package ships, which is D-Bus activated and so depends on the session
+  # bus finding the service file in the Nix profile.
+  xdg.desktopEntries."com.mitchellh.ghostty" = {
+    name = "Ghostty";
+    genericName = "Terminal Emulator";
+    comment = "A fast, feature-rich, and GPU-accelerated terminal emulator";
+    exec = "${lib.getExe wrappedGhostty} --gtk-single-instance=true";
+    icon = "com.mitchellh.ghostty";
+    terminal = false;
+    type = "Application";
+    categories = [
+      "System"
+      "TerminalEmulator"
+      "Utility"
+    ];
+  };
+
+  # Other GUI apps stay Flatpaks: a Nix GUI app lacks the host graphics
+  # drivers on a non-NixOS system unless it is wrapped with nixGL. nix-flatpak
+  # installs them for this user from Flathub and leaves apps it does not
+  # manage alone.
   services.flatpak = {
     enable = true;
     remotes = [

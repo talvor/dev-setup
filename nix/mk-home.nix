@@ -4,6 +4,7 @@
   nixpkgs,
   home-manager,
   nix-flatpak,
+  nixgl,
 }:
 {
   os,
@@ -15,6 +16,8 @@
 }:
 home-manager.lib.homeManagerConfiguration {
   pkgs = nixpkgs.legacyPackages.${system};
+  # The nixGL flake, for the OS modules that wrap Nix GUI apps with it
+  extraSpecialArgs = { inherit nixgl; };
   modules = [
     nix-flatpak.homeManagerModules.nix-flatpak
     ./modules/dotfiles.nix

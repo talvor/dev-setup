@@ -8,6 +8,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-flatpak.url = "github:gmodena/nix-flatpak/v0.7.0";
+    nixgl = {
+      url = "github:nix-community/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -15,11 +19,19 @@
       nixpkgs,
       home-manager,
       nix-flatpak,
+      nixgl,
       ...
     }:
     let
       lib = nixpkgs.lib;
-      mkHome = import ./nix/mk-home.nix { inherit nixpkgs home-manager nix-flatpak; };
+      mkHome = import ./nix/mk-home.nix {
+        inherit
+          nixpkgs
+          home-manager
+          nix-flatpak
+          nixgl
+          ;
+      };
 
       # OS ids managed by Home Manager, each with the systems its check builds
       # for. Every id here has os/<id>/home.nix, which is also what makes

@@ -17,8 +17,8 @@ install_prerequisites() {
   #                nix-flatpak installs
   #   fontconfig - font cache for the fonts Home Manager installs
   #   zsh        - login shell, must be in /etc/shells
-  #   alacritty  - GUI app that is not on Flathub (Nix GUI apps lack the host
-  #                graphics drivers)
+  #   alacritty  - GUI app that is not on Flathub (a Nix GUI app lacks the host
+  #                graphics drivers unless wrapped with nixGL)
   #   stow       - the fallback scripts/setup_dotfiles.sh
   #   build-essential - the host C toolchain, for building against system
   #                libraries
