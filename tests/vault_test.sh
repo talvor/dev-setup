@@ -251,6 +251,18 @@ check "restore --dry-run changes no file" [ "$before" == "$(snapshot "$C")" ]
 check "restore --dry-run changes no key or trust" [ "$gpg_before" == "$(gpg_state "$C")" ]
 check "restore --dry-run previews new files" has_line "new: ~/.ssh/id_ed25519" "$out"
 
+# A fresh machine without a keyring yet: GNUPGHOME names a folder that does not exist
+N="$WORK/n"
+new_home "$N"
+rmdir "$(gnupg_of "$N")"
+before="$(snapshot "$N")"
+out="$(vault "$N" --vault "$A_VAULT" --dry-run restore gpg 2>&1)"
+check "restore --dry-run without a keyring exits 0" [ $? -eq 0 ] || echo "$out"
+check "restore --dry-run does not create the keyring" no_file "$(gnupg_of "$N")"
+check "restore --dry-run without a keyring changes no file" [ "$before" == "$(snapshot "$N")" ]
+check "restore --dry-run without a keyring previews the keys as new" has_line "keys: all new" "$out"
+check "restore --dry-run without a keyring previews new owner trust" has_line "new: owner trust" "$out"
+
 echo "changed" >>"$B/firstmate/data/captain.md"
 before="$(snapshot "$B")"
 out="$(vault "$B" --vault "$A_VAULT" --dry-run restore firstmate 2>&1)"

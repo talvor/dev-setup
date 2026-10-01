@@ -380,6 +380,12 @@ gpg_restore() {
     return 1
   fi
 
+  if is_dry_run && [[ ! -d "${GNUPGHOME:-$HOME/.gnupg}" ]]; then
+    echo "  keys: all new (no GPG keyring yet)"
+    echo "  new: owner trust"
+    return 0
+  fi
+
   have="$(gpg_secret_fprs)"
   while IFS= read -r fpr; do
     [[ -n "$fpr" ]] || continue
