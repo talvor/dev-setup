@@ -21,9 +21,10 @@ bash <(curl -fsSL https://raw.githubusercontent.com/talvor/dev-setup/main/instal
 
 `install.sh` clones over HTTPS into `~/Development/dev-setup` and prints the
 next steps for the detected OS: preview with `./setup.sh --dry-run`, run
-`./setup.sh`, then the optional restore of the SSH/GPG keys (and, on Pop!_OS,
-the firstmate files) from the `vault/` folder copied from the old machine. It
-never runs `setup.sh` itself. If git is missing it says how to install it.
+`./setup.sh`, then the optional restore of the GPG card keyring, SSH keys and
+firstmate files from a USB drive prepared on the old machine (see
+[Vault](#vault-optional)). It never runs `setup.sh` itself. If git is missing
+it says how to install it.
 
 Choose another location with `DEV_SETUP_DIR=<path>` or an argument
 (`curl ... | bash -s -- --dir <path>`). An existing dev-setup clone there is
@@ -51,8 +52,7 @@ cd dev-setup
 - ✅ Install fonts
 - ✅ Install CLI tools from URLs (for tools not available via package manager)
 - ✅ Setup dotfiles using GNU Stow, or Home Manager links on Pop!_OS
-- ✅ Setup SSH and GPG keys from encrypted vault (optional)
-- ✅ Back up and restore the firstmate home's private files in an encrypted vault (optional)
+- ✅ Carry the GPG card keyring, SSH keys and firstmate files to a new machine in an encrypted vault (optional)
 - ✅ Dry-run mode that shows what would happen without changing anything
 
 ## Supported operating systems
@@ -159,7 +159,7 @@ On Pop!_OS, `./setup.sh` runs three steps:
    `~/firstmate/projects` to it. An existing `~/firstmate/projects` that is
    anything else (a directory, or a link elsewhere) is left alone with a
    warning. Restoring firstmate's private files is not part of setup (see
-   [Firstmate Backup](#firstmate-backup-optional)).
+   [Vault](#vault-optional)).
 
 The flake follows `nixos-unstable` (with Home Manager `master`), so newer tools
 such as `herdr` come straight from nixpkgs; `flake.lock` pins the exact
@@ -276,10 +276,9 @@ dev-setup/
 │   ├── run_os_steps.sh       # Runs the per-OS extra steps
 │   ├── setup_dotfiles.sh
 │   ├── setup_home_manager.sh # Installs Nix, applies the Home Manager config
-│   ├── {export,restore}_{ssh,gpg}_key.sh
-│   ├── {export,restore}_firstmate.sh # Encrypted backup of the firstmate home's private files
-│   ├── restore_vault.sh      # Menu to restore any of the above; copy to a USB drive with vault/
-│   └── prepare_usb.sh        # Copies restore_vault.sh and vault/ onto a USB drive
+│   └── vault.sh              # Self-contained: export/restore the vault, copy it to a USB drive
+├── tests/
+│   └── vault_test.sh         # Tests for scripts/vault.sh
 ├── os/                       # Everything that only applies to one OS
 │   └── <os id>/
 │       ├── backend.sh        # The package-manager commands for this OS
@@ -293,6 +292,8 @@ dev-setup/
 │       ├── {tools,apps,fonts,urls}.txt
 │       └── dotfiles.txt      # Stow packages for this OS (no common file)
 ├── dotfiles/                 # Your dotfiles (managed by stow)
+├── docs/adr/                 # Architecture decision records
+├── GLOSSARY.md               # Domain terms (the vault)
 └── README.md
 ```
 
@@ -448,9 +449,18 @@ Every shell script must pass `bash -n` and [shellcheck](https://www.shellcheck.n
 bash 3.2 because macOS ships it.
 
 ```bash
-files=(install.sh setup.sh rebuild.sh lib/*.sh scripts/*.sh os/*/*.sh os/*/install_scripts/*.sh)
+files=(install.sh setup.sh rebuild.sh lib/*.sh scripts/*.sh os/*/*.sh os/*/install_scripts/*.sh tests/*.sh)
 for f in "${files[@]}"; do bash -n "$f"; done
 shellcheck "${files[@]}"
+```
+
+`scripts/vault.sh` has tests that go through its commands only. They need
+`age`, `gpg`, `ssh-keygen` and `tar`, run in a throwaway temp folder with fake
+home folders and a throwaway vault key, and never touch your keyring, `~/.ssh`
+or firstmate home:
+
+```bash
+bash tests/vault_test.sh
 ```
 
 `nix flake check` evaluates and builds every Home Manager configuration for a
@@ -463,36 +473,81 @@ docker run --rm -v "$PWD":/src:ro nixos/nix sh -c '
   nix --extra-experimental-features "nix-command flakes" flake check -L'
 ```
 
-## SSH and GPG Keys Setup (Optional)
+## Vault (Optional)
 
-### Exporting SSH and GPG Keys
-To securely export your SSH keys, use the `export_ssh_key.sh` or `export_gpg_key.sh` scripts located in the `scripts/` directory. This script encrypts your private key and stores it securely.
+`scripts/vault.sh` carries personal keys and state from one machine to the
+next in an encrypted vault. [GLOSSARY.md](GLOSSARY.md) defines its terms and
+[docs/adr/](docs/adr/) records why it is built this way. It needs `age` (on
+Pop!_OS Home Manager installs it, `nix/common.nix`), `tar`, and `gpg` and
+`ssh-keygen` for those entries.
 
-```bash
-# Export SSH key
-./scripts/export_ssh_key.sh
-# Export GPG key
-./scripts/export_gpg_key.sh
+The vault holds three entries:
+
+| Entry | What it carries |
+| ----- | --------------- |
+| `gpg` | Card keyring: the public keys, card stubs and owner trust of every GPG secret key. **Not a backup of private keys held on a YubiKey**: those never leave the card, so back up the primary key itself elsewhere. |
+| `ssh` | Every private key file in `~/.ssh`; each `.pub` is regenerated on restore. |
+| `firstmate` | Every top-level file in `data/` plus everything in `config/` of the firstmate home (`$FM_HOME`, default `~/firstmate`); the `data/<task-id>/` folders stay out. |
+
+The vault lives outside the checkout, so re-cloning or `git clean` never
+touches it:
+
+```text
+~/.local/share/dev-setup/vault/
+  key.age             # the vault key, locked by your passphrase
+  key.pub             # its public half; stays on this machine
+  gpg.tar.age  ssh.tar.age  firstmate.tar.age
 ```
 
-The encrypted key will be saved in the `vault/` directory. You can transfer this file to another machine for restoration.
-`vault/` is gitignored, so copy it to the new machine manually.
-
-### Restoring SSH and GPG Keys
-To restore keys exported from another machine, use the `restore_ssh_key.sh` or `restore_gpg_key.sh` script. This script decrypts and reinstalls your private keys.
+Every entry is encrypted to the vault key. Export only needs `key.pub`, so it
+never asks for the passphrase; the first export creates the vault key and asks
+for a new passphrase, the one thing you need to remember to restore. Restore
+asks for it once. Lose it and every vault is lost.
 
 ```bash
-# Restore SSH key
-./scripts/restore_ssh_key.sh
-# Restore GPG key
-./scripts/restore_gpg_key.sh
+./scripts/vault.sh export                    # every entry (or name some: export firstmate)
+./scripts/vault.sh usb /media/$USER/USB      # copy vault.sh, key.age and the entries
+./scripts/vault.sh restore                   # every entry the vault holds (or name some)
+./scripts/vault.sh                           # menu: pick the entries to restore
 ```
 
-These scripts use paths relative to the current directory (`vault/`), so run
-them from the repository root. They need `age`; on Pop!_OS Home Manager
-installs it (`nix/common.nix`).
+Every command takes `--dry-run` and `--vault <dir>` (see `--help`).
 
-### GPG Passphrase in the GNOME Keyring (Pop!_OS)
+### Moving to a new machine
+
+1. On the old machine: `./scripts/vault.sh export`, then
+   `./scripts/vault.sh usb <drive folder>`. The drive gets `vault.sh`, `key.age`
+   and the entries, never `key.pub`: whoever holds it could add forged entries.
+   Files already on the drive are replaced when they differ; nothing is deleted.
+2. On the new machine: `bash <drive folder>/vault.sh`. No dev-setup clone is
+   needed: it reads the vault next to itself, asks which entries to restore and
+   the passphrase once. Restore the firstmate entry only once the firstmate
+   home exists (on Pop!_OS `setup.sh` clones it).
+
+The restore also installs `key.age` into `~/.local/share/dev-setup/vault` and
+derives `key.pub`, so the new machine exports with the same key and passphrase.
+
+### Restoring
+
+- An identical file is left alone. A file that differs is first moved into
+  one private folder per restore, `~/.local/share/dev-setup/restore-backup-<timestamp>/`,
+  keeping its path relative to `$HOME`. For gpg, keys are merged (nothing is
+  replaced) and the current owner trust is saved there before it is imported.
+- `restore --dry-run` is a full preview: it asks for the passphrase, decrypts
+  into a private temp folder and lists every file as new, unchanged or would
+  replace, changing nothing.
+- The YubiKey path cannot be tested automatically. After a restore, plug in the
+  YubiKey and check `gpg --card-status` and `echo test | gpg --clearsign`.
+
+### Vaults made by the old scripts
+
+The vault format changed in a clean break: vaults and USB drives made by the
+old `export_*.sh` scripts (`<checkout>/vault/` with `gpg_key.age`,
+`gpg_ownertrust`, `ssh_key_*.age`, `firstmate.tar.age`) cannot be read. Before
+retiring a machine that has one, pull this version, run `vault.sh export` and
+`vault.sh usb`, then delete the old `<checkout>/vault/` by hand.
+
+## GPG Passphrase in the GNOME Keyring (Pop!_OS)
 
 `gpg-agent.conf` caches the passphrase for 400 days, so it is asked once per
 login or reboot. To not be asked at all, store it once in the GNOME keyring,
@@ -513,57 +568,3 @@ secret-tool store --label="GnuPG signing key" xdg:schema org.gnupg.Passphrase ke
 
 This only helps while the GNOME keyring is unlocked, which it is after a
 password login (not after an automatic login).
-
-## Firstmate Backup (Optional)
-
-`export_firstmate.sh` backs up the private files of the firstmate home
-(`~/firstmate` by default) into one age-encrypted archive,
-`vault/firstmate.tar.age`: `data/captain.md`, `data/projects.md`,
-`data/learnings.md` (if it exists) and every file under `config/`. age asks for
-a passphrase; it is never passed on the command line. This is a one-way
-snapshot: firstmate keeps its files in its own home, so export again whenever
-you want a fresh backup.
-
-```bash
-# Back up ~/firstmate (or $FM_HOME, or --home <dir>)
-./scripts/export_firstmate.sh
-# See which files would be backed up
-./scripts/export_firstmate.sh --dry-run
-```
-
-`restore_firstmate.sh` decrypts the archive (age asks for the passphrase) and
-puts the files back into the firstmate home, keeping their file modes. Clone
-firstmate there first (on Pop!_OS `setup.sh` does that). An existing file that differs is first moved, with its
-mode, into `data/.restore-backup-<timestamp>/<path>` in the firstmate home
-(the export never archives it); identical files are left alone. `--dry-run` shows what would change.
-
-```bash
-./scripts/restore_firstmate.sh
-```
-
-`setup.sh` never runs the restore: run it by hand, from the repository root,
-when you want the files back. Like the key scripts, both need `age`.
-
-### Restoring from a USB Drive
-
-`restore_vault.sh` asks which of the GPG key, SSH key and firstmate files to
-restore (pick several, e.g. `1 3`, or `a` for all; only items found in the
-vault are offered) and runs the matching `restore_*.sh` script for each.
-`prepare_usb.sh` copies it and every file of `vault/` onto a USB drive
-(replacing files that differ, deleting nothing; `--dry-run` shows the plan):
-
-```bash
-./scripts/prepare_usb.sh /media/$USER/USB
-```
-
-```text
-<usb>/restore_vault.sh
-<usb>/vault/            # gpg_key.age, gpg_ownertrust, ssh_key_*.age, firstmate.tar.age
-```
-
-On the new machine, clone dev-setup first (`install.sh`), then run
-`bash /path/to/usb/restore_vault.sh`. It reads the vault next to itself (or
-`--vault <dir>`) and the restore scripts from `~/Development/dev-setup`
-(`$DEV_SETUP_DIR` or `--repo <dir>`). `--dry-run` changes nothing; firstmate
-still decrypts to list its files. Run from the clone's `scripts/` it uses the
-restore scripts beside it and the `vault/` in the current directory.

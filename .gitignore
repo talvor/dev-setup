@@ -1,5 +1,2 @@
 # zsh compiled by-products
 *.zwc
-
-# Encrypted key and firstmate backups; kept out of git, copy between machines by hand
-vault/

@@ -6,7 +6,7 @@
 # Clones firstmate into ~/firstmate unless that exists, and links
 # ~/firstmate/projects to ~/Development. An existing ~/firstmate/projects that
 # is not that link is left alone with a warning. Restoring the firstmate
-# private files is a separate, manual step: scripts/restore_firstmate.sh.
+# private files is a separate, manual step: scripts/vault.sh restore firstmate.
 
 # shellcheck source=../../../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../../../lib/common.sh"
