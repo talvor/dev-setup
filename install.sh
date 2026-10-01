@@ -336,23 +336,24 @@ USAGE
   echo
   echo -e "${BOLD}Optional: restore keys and files from your old machine${NC}"
   echo
-  echo "The encrypted vault/ folder is not in git. Copy it from the old machine's"
-  echo "clone (run this on the new machine, from the clone):"
-  echo "     scp -r <old-machine>:Development/dev-setup/vault ."
+  echo "The encrypted vault (GPG card keyring, SSH keys, firstmate files) is not in"
+  echo "git. On the old machine, with this version of dev-setup, put it on a USB drive"
+  echo "(vaults made by the old export_*.sh scripts cannot be read any more):"
+  echo "     ./scripts/vault.sh export"
+  echo "     ./scripts/vault.sh usb <drive folder>"
   echo
-  echo "Then, from the repository root (they read ./vault and need age):"
+  echo "Then restore on this machine from the drive (it asks which entries, and the"
+  echo "vault passphrase once; it needs age):"
   age_hint="$(install_hint age)"
   if [[ "$os" == "popos" ]]; then
     echo "   (age is installed by ./setup.sh on Pop!_OS)"
   elif [[ -n "$age_hint" ]]; then
     echo "   (install age first if missing: $age_hint)"
   fi
-  echo "     ./scripts/restore_ssh_key.sh"
-  echo "     ./scripts/restore_gpg_key.sh"
+  echo "     bash <drive folder>/vault.sh"
   if [[ "$os" == "popos" ]]; then
     echo
-    echo "After ./setup.sh has cloned firstmate, restore its private files:"
-    echo "     ./scripts/restore_firstmate.sh"
+    echo "Restore the firstmate entry after ./setup.sh has cloned firstmate."
   fi
   echo
   echo "Once the SSH key is restored you can switch the clone to SSH:"

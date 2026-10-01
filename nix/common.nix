@@ -11,7 +11,7 @@
     # Formerly installed from URLs
     starship
 
-    # Needed by scripts/restore_{ssh,gpg,firstmate}_key.sh
+    # Needed by scripts/vault.sh
     age
 
     # Nerd Fonts
