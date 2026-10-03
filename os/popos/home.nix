@@ -26,6 +26,7 @@ in
   home.packages = with pkgs; [
     # Terminal and AI
     claude-code
+    codex
     herdr
     direnv
     wrappedGhostty
@@ -35,6 +36,9 @@ in
     lazydocker
     gh
     neovim
+
+    # languages
+    go
 
     # Utilities
     yubikey-manager
