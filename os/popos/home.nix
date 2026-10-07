@@ -32,6 +32,7 @@ in
     wrappedGhostty
 
     # Dev tools
+    docker
     lazygit
     lazydocker
     gh
@@ -39,6 +40,7 @@ in
 
     # languages
     go
+    deno
 
     # Utilities
     yubikey-manager
