@@ -32,7 +32,6 @@ in
     wrappedGhostty
 
     # Dev tools
-    docker
     lazygit
     lazydocker
     gh
